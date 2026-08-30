@@ -13,15 +13,25 @@ Currently defined in the Prisma schema:
 - A Product has many OrderItems.
 
 ## 2. Planned Entities (Approved Project Features)
-These are not in the database yet but are designed to support the approved features:
-- **Authentication:** Extend `Customer` (or create a `User` model) with `passwordHash` for login.
-- **Category:** `id`, `name`. `Product` will have a relation to `Category`.
-- **Review:** `id`, `productId`, `customerId`, `rating`, `comment`.
-- **Discount/Coupon:** `id`, `code`, `discountPercent`, `validUntil`, `isActive`.
-- **Payment:** `id`, `orderId`, `status` (PENDING, SUCCESS, FAILED), `method`.
-- **Shipping:** `id`, `orderId`, `address`, `status`, `trackingCode`.
+These are minimal practical models designed to support approved features without overengineering:
 
-## 3. Key Design Rules
+- **Authentication (Customer vs User resolution):** (Engineering Decision)
+  - We will NOT create a separate `User` table.
+  - The existing `Customer` model will be extended with a `passwordHash` (String) field to handle authentication.
+- **Category:** (Engineering Decision: One-to-Many)
+  - `id`, `name`. 
+  - `Product` will have an optional `categoryId` to support categorization.
+- **Review:**
+  - `id`, `productId`, `customerId`, `rating` (Int 1-5), `comment`.
+- **Discount/Coupon (Minimum Practical Model):** (Engineering Decision)
+  - **Coupon:** `id`, `code` (Unique), `discountPercent` (Int), `isActive` (Boolean).
+  - **Order:** Add `couponId` (Optional) and `discountAmount` (Decimal) to track applied discounts.
+- **Payment (Minimum Practical Model):** (Engineering Decision)
+  - **Payment:** `id`, `orderId` (Unique), `status` (PENDING, COMPLETED, FAILED), `amount` (Decimal).
+- **Shipping (Minimum Practical Model):** (Engineering Decision)
+  - **Shipping:** `id`, `orderId` (Unique), `address` (String), `status` (PREPARING, SHIPPED, DELIVERED).
+
+## 3. Key Design Rules (Engineering Decisions)
 - **Decimals for Money:** `total` and `price` must use Decimal (already implemented).
 - **Snapshot Data:** `OrderItem.unitPrice` captures the price at the time of purchase.
 - **Data Integrity:** Strict foreign keys and cascading rules (Restrict deletion of products if they belong to an order).
