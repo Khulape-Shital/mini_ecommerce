@@ -41,7 +41,7 @@ export const orderService = {
     const productsMap = new Map(products.map(p => [p.id, p]));
 
     let subtotal = new Prisma.Decimal(0);
-    const orderItemsData: any[] = [];
+    const orderItemsData: { productId: string; quantity: number; unitPrice: Prisma.Decimal }[] = [];
 
     for (const productId of uniqueProductIds) {
       const requestedQuantity = aggregatedItems[productId]!;
@@ -107,6 +107,12 @@ export const orderService = {
             items: {
               create: orderItemsData
             },
+            payment: {
+              create: {
+                status: PaymentStatus.PENDING,
+                amount: total
+              }
+            },
             shipping: {
               create: {
                 status: ShippingStatus.PREPARING,
@@ -116,6 +122,7 @@ export const orderService = {
           },
           include: {
             items: true,
+            payment: true,
             shipping: true
           }
         });
@@ -137,7 +144,7 @@ export const orderService = {
     const limit = options.limit || 20;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Prisma.OrderWhereInput = {};
     if (options.customerId) where.customerId = options.customerId;
     if (options.status) where.status = options.status;
 
@@ -167,6 +174,7 @@ export const orderService = {
       where: { id },
       include: {
         items: true,
+        payment: true,
         shipping: true,
       },
     });
@@ -200,7 +208,7 @@ export const orderService = {
     return await prisma.order.update({
       where: { id },
       data: { status: newStatus },
-      include: { items: true, shipping: true }
+      include: { items: true, payment: true, shipping: true }
     });
   },
 
@@ -233,7 +241,7 @@ export const orderService = {
         const updatedOrder = await tx.order.update({
           where: { id },
           data: { status: OrderStatus.CANCELLED },
-          include: { items: true, shipping: true }
+          include: { items: true, payment: true, shipping: true }
         });
 
         // b. Restore inventory

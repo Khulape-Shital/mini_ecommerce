@@ -5,10 +5,10 @@ import { prisma } from '../../src/db/prisma.js';
 import { OrderStatus, Prisma } from '../../src/db/prisma.js';
 
 describe('Order API', () => {
-  let customer: any;
-  let product1: any;
-  let product2: any;
-  let coupon: any;
+  let customer: { id: string; email: string };
+  let product1: { id: string; name: string; price: Prisma.Decimal; quantity: number };
+  let product2: { id: string; name: string; price: Prisma.Decimal; quantity: number };
+  let coupon: { id: string; code: string };
 
   beforeEach(async () => {
     await prisma.shipping.deleteMany();
@@ -73,7 +73,7 @@ describe('Order API', () => {
       // Verify snapshot
       const items = res.body.data.items;
       expect(items).toHaveLength(2);
-      const item1 = items.find((i: any) => i.productId === product1.id);
+      const item1 = items.find((i: { productId: string }) => i.productId === product1.id);
       expect(item1.unitPrice).toBe('100');
 
       // Change product price later, shouldn't affect past order
@@ -206,7 +206,7 @@ describe('Order API', () => {
   });
 
   describe('Cancellation', () => {
-    let order: any;
+    let order: { id: string; status: string };
 
     beforeEach(async () => {
       const res = await request(app).post('/api/v1/orders').send({
@@ -243,7 +243,7 @@ describe('Order API', () => {
   });
 
   describe('Status transitions', () => {
-    let order: any;
+    let order: { id: string; status: string };
 
     beforeEach(async () => {
       const res = await request(app).post('/api/v1/orders').send({

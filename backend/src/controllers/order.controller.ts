@@ -25,7 +25,7 @@ export const orderController = {
       const customerId = req.query.customerId as string | undefined;
       const status = req.query.status as OrderStatus | undefined;
 
-      const options: any = { page, limit };
+      const options: { page?: number; limit?: number; customerId?: string; status?: OrderStatus } = { page, limit };
       if (customerId) options.customerId = customerId;
       if (status) options.status = status;
       const result = await orderService.getOrders(options);
