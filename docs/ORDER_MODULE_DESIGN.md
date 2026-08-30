@@ -5,8 +5,8 @@ This document details the implementation design for the Order Module, ensuring d
 ## 1. Transaction Flow (Create Order)
 
 1. **Request Reception:** The API receives a request to `POST /api/v1/orders`. Payload contains `items` (array of `productId` and `quantity`), an optional `couponCode`, and `shippingAddress`.
-2. **Customer Validation:** Extract `customerId` from the authenticated request (`req.user.id`).
-3. **Payload Sanitization (Duplicate Products):** Group and merge quantities for any duplicate `productId`s sent in the request payload to prevent conflicting database updates.
+2. **Customer Validation:** Extract `customerId`. (Note: JWT authentication is not implemented yet. Temporarily, accept `customerId` in the request body for `POST /orders` and as a query parameter for `GET /orders`. This will be explicitly replaced by `req.user.id` when authentication is implemented).
+3. **Payload Validation (Duplicate Products):** Reject any duplicate `productId`s sent in the request payload with a validation error to prevent conflicting database updates. Do NOT merge or aggregate duplicate items.
 4. **Coupon Validation (Optional):** If a `couponCode` is provided, query the `Coupon` table. Abort if not found or if `isActive` is false.
 5. **Product & Price Reading:** Query the `Product` table for all requested `productId`s. If any product is missing, abort the transaction. Read the current price from this query to use as the `unitPrice` snapshot.
 6. **Pre-calculation Inventory Check:** Verify `requested_quantity <= product.quantity` for each item. If insufficient, return an `INSUFFICIENT_INVENTORY` error.
@@ -25,7 +25,7 @@ This document details the implementation design for the Order Module, ensuring d
 ## 2. Validation Rules
 
 - **Payload:** `items` must be a non-empty array. Each item must have a valid UUID `productId` and an integer `quantity > 0`. `shippingAddress` is required and must be a valid string.
-- **Duplicate Products:** The backend must aggregate quantities if the client sends the same `productId` multiple times in one request.
+- **Duplicate Products:** The backend must reject the request with a validation error if the client sends the same `productId` multiple times in one request. Do not aggregate quantities.
 - **Inventory:** An order cannot be placed if it exceeds current stock levels.
 - **Coupons:** Only active coupons can be applied.
 
@@ -68,6 +68,7 @@ To prevent the "read-modify-write" race condition (where two concurrent requests
 **Request:**
 ```json
 {
+  "customerId": "abc-123-uuid",
   "items": [
     { "productId": "550e8400-e29b-41d4-a716-446655440000", "quantity": 2 }
   ],
@@ -101,14 +102,13 @@ To prevent the "read-modify-write" race condition (where two concurrent requests
 **Response (200 OK):** Includes nested `items` (with snapshotted `unitPrice`), `payment`, and `shipping` objects.
 
 ### List Orders (`GET /api/v1/orders`)
-**Query Params:** `?page=1&limit=10&status=PENDING`
-**Response:** Paginated list of orders for the authenticated customer.
+**Query Params:** `?page=1&limit=10&status=PENDING&customerId=abc-123-uuid`
+**Response:** Paginated list of orders for the specified customer (temporarily filtered by query parameter until authentication is added).
 
 ### Cancel Order (`POST /api/v1/orders/:id/cancel`)
 **Response (200 OK):** Order object reflecting the new `CANCELLED` status.
 
 ## 7. Unresolved Questions
 
-1. **Shipping Address Persistence:** Should a customer's `shippingAddress` be saved to their profile for future orders, or should they provide it manually every time? (Current schema implies manual per-order input).
-2. **Database Constraints:** While the Prisma conditional update prevents overselling on the application layer, should we also write a raw SQL migration to add a `CHECK (quantity >= 0)` constraint to the database for absolute data integrity?
-3. **Partial Fulfillment:** Do we need to support partial cancellations or partial shipments in the future? (The current design assumes atomic, full-order lifecycle transitions).
+1. **Database Constraints:** While the Prisma conditional update prevents overselling on the application layer, should we also write a raw SQL migration to add a `CHECK (quantity >= 0)` constraint to the database for absolute data integrity?
+2. **Partial Fulfillment:** Do we need to support partial cancellations or partial shipments in the future? (The current design assumes atomic, full-order lifecycle transitions).
