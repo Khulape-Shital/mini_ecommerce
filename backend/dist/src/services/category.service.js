@@ -1,4 +1,4 @@
-import { prisma } from '../db/prisma.js';
+import { prisma, Prisma } from '../db/prisma.js';
 import { AppError } from '../utils/AppError.js';
 export const createCategory = async (name) => {
     try {
@@ -7,7 +7,7 @@ export const createCategory = async (name) => {
         });
     }
     catch (error) {
-        if (error && error.name === 'PrismaClientKnownRequestError') {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2002') {
                 throw new AppError(409, 'CATEGORY_ALREADY_EXISTS', 'A category with this name already exists');
             }
@@ -37,7 +37,7 @@ export const updateCategory = async (id, name) => {
         });
     }
     catch (error) {
-        if (error && error.name === 'PrismaClientKnownRequestError') {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2025') {
                 throw new AppError(404, 'CATEGORY_NOT_FOUND', 'Category not found');
             }
@@ -71,7 +71,7 @@ export const deleteCategory = async (id) => {
         });
     }
     catch (error) {
-        if (error && error.name === 'PrismaClientKnownRequestError') {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2025') {
                 throw new AppError(404, 'CATEGORY_NOT_FOUND', 'Category not found');
             }

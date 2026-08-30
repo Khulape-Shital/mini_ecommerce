@@ -1,5 +1,5 @@
 
-import { prisma } from '../db/prisma.js';
+import { prisma, Prisma } from '../db/prisma.js';
 import { AppError } from '../utils/AppError.js';
 
 interface CreateProductInput {
@@ -42,7 +42,7 @@ export const createProduct = async (data: CreateProductInput) => {
     }
   }
 
-  const payload: any = {
+  const payload: Prisma.ProductUncheckedCreateInput = {
     name: data.name,
     description: data.description !== undefined ? data.description : null,
     price: data.price,
@@ -72,7 +72,7 @@ export const updateProduct = async (id: string, data: UpdateProductInput) => {
     }
   }
 
-  const payload: any = {};
+  const payload: Prisma.ProductUncheckedUpdateInput = {};
   if (data.name !== undefined) payload.name = data.name;
   if (data.description !== undefined) payload.description = data.description;
   if (data.price !== undefined) payload.price = data.price;
@@ -84,8 +84,8 @@ export const updateProduct = async (id: string, data: UpdateProductInput) => {
       where: { id },
       data: payload,
     });
-  } catch (error: any) {
-    if (error && (error as any).name === 'PrismaClientKnownRequestError') {
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2025') {
         throw new AppError(404, 'PRODUCT_NOT_FOUND', 'Product not found');
       }
@@ -129,8 +129,8 @@ export const deleteProduct = async (id: string) => {
     await prisma.product.delete({
       where: { id },
     });
-  } catch (error: any) {
-    if (error && (error as any).name === 'PrismaClientKnownRequestError') {
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2025') {
         throw new AppError(404, 'PRODUCT_NOT_FOUND', 'Product not found');
       }
@@ -147,7 +147,7 @@ export const getProducts = async (query: ListProductsQuery) => {
   const skip = (pageNum - 1) * limitNum;
   const take = limitNum;
 
-  const where: any = {};
+  const where: Prisma.ProductWhereInput = {};
   if (categoryId) {
     where.categoryId = categoryId;
   }

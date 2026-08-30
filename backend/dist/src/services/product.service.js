@@ -1,4 +1,4 @@
-import { prisma } from '../db/prisma.js';
+import { prisma, Prisma } from '../db/prisma.js';
 import { AppError } from '../utils/AppError.js';
 export const createProduct = async (data) => {
     if (data.price < 0) {
@@ -57,7 +57,7 @@ export const updateProduct = async (id, data) => {
         });
     }
     catch (error) {
-        if (error && error.name === 'PrismaClientKnownRequestError') {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2025') {
                 throw new AppError(404, 'PRODUCT_NOT_FOUND', 'Product not found');
             }
@@ -96,7 +96,7 @@ export const deleteProduct = async (id) => {
         });
     }
     catch (error) {
-        if (error && error.name === 'PrismaClientKnownRequestError') {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2025') {
                 throw new AppError(404, 'PRODUCT_NOT_FOUND', 'Product not found');
             }

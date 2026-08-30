@@ -9,3 +9,4 @@ const pool = new pg.Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 
 export const prisma = new PrismaClient({ adapter });
+export { Prisma } from '../../generated/prisma/client.js';
