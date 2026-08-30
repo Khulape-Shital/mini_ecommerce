@@ -147,7 +147,7 @@ describe('Order API', () => {
       expect(res.status).toBe(400); // Zod validation
     });
 
-    it('should handle duplicate product IDs by aggregating quantities', async () => {
+    it('should reject duplicate product IDs', async () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
@@ -159,10 +159,8 @@ describe('Order API', () => {
           shippingAddress: '123 Main St'
         });
 
-      expect(res.status).toBe(201);
-      expect(res.body.data.total).toBe('500'); // (2+3) * 100
-      expect(res.body.data.items).toHaveLength(1);
-      expect(res.body.data.items[0].quantity).toBe(5);
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('DUPLICATE_PRODUCT');
     });
 
     it('should fail if insufficient inventory and rollback transaction', async () => {

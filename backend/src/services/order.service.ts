@@ -19,11 +19,12 @@ export const orderService = {
       throw new AppError(404, 'CUSTOMER_NOT_FOUND', 'Customer not found');
     }
 
-    // 2. Aggregate duplicate products
     const aggregatedItems: Record<string, number> = {};
     for (const item of items) {
-      const currentQty = aggregatedItems[item.productId] || 0;
-      aggregatedItems[item.productId] = currentQty + item.quantity;
+      if (aggregatedItems[item.productId]) {
+        throw new AppError(400, 'DUPLICATE_PRODUCT', `Duplicate product ID ${item.productId} in order items`);
+      }
+      aggregatedItems[item.productId] = item.quantity;
     }
 
     const uniqueProductIds = Object.keys(aggregatedItems);
@@ -106,12 +107,6 @@ export const orderService = {
             items: {
               create: orderItemsData
             },
-            payment: {
-              create: {
-                status: PaymentStatus.PENDING,
-                amount: total
-              }
-            },
             shipping: {
               create: {
                 status: ShippingStatus.PREPARING,
@@ -121,7 +116,6 @@ export const orderService = {
           },
           include: {
             items: true,
-            payment: true,
             shipping: true
           }
         });
@@ -173,7 +167,6 @@ export const orderService = {
       where: { id },
       include: {
         items: true,
-        payment: true,
         shipping: true,
       },
     });
@@ -207,7 +200,7 @@ export const orderService = {
     return await prisma.order.update({
       where: { id },
       data: { status: newStatus },
-      include: { items: true, payment: true, shipping: true }
+      include: { items: true, shipping: true }
     });
   },
 
@@ -240,7 +233,7 @@ export const orderService = {
         const updatedOrder = await tx.order.update({
           where: { id },
           data: { status: OrderStatus.CANCELLED },
-          include: { items: true, payment: true, shipping: true }
+          include: { items: true, shipping: true }
         });
 
         // b. Restore inventory

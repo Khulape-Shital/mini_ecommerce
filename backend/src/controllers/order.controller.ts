@@ -5,7 +5,8 @@ import { OrderStatus } from '../db/prisma.js';
 export const orderController = {
   async createOrder(req: Request, res: Response, next: NextFunction) {
     try {
-      // Note: The schema expects customerId in the body since we don't have JWT auth yet
+      // TEMPORARY: customerId is expected in req.body until JWT authentication is implemented.
+      // Do NOT create fake authentication middleware.
       const order = await orderService.createOrder(req.body);
       res.status(201).json({
         success: true,
@@ -20,6 +21,7 @@ export const orderController = {
     try {
       const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
       const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20;
+      // TEMPORARY: customerId is accepted as a query filter until JWT authentication is implemented.
       const customerId = req.query.customerId as string | undefined;
       const status = req.query.status as OrderStatus | undefined;
 
