@@ -1,5 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as customerService from '../services/customer.service.js';
+import type { z } from 'zod';
+import { listCustomersQuerySchema } from '../schemas/customer.schema.js';
+
+type ListCustomersQuery = z.infer<typeof listCustomersQuerySchema>['query'];
 
 export const createCustomer = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -13,7 +17,8 @@ export const createCustomer = async (req: Request, res: Response, next: NextFunc
 export const getCustomers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // query is validated by zod and transformed
-    const result = await customerService.getCustomers(req.query as any);
+    const query = req.query as unknown as ListCustomersQuery;
+    const result = await customerService.getCustomers(query);
     res.status(200).json({ success: true, data: result.items, meta: result.meta });
   } catch (error) {
     next(error);
