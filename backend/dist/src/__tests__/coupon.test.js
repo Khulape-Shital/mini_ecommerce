@@ -5,6 +5,8 @@ import { prisma } from '../../src/db/prisma.js';
 describe('Coupon API', () => {
     beforeEach(async () => {
         await prisma.orderItem.deleteMany();
+        await prisma.payment.deleteMany();
+        await prisma.shipping.deleteMany();
         await prisma.order.deleteMany();
         await prisma.coupon.deleteMany();
     });
