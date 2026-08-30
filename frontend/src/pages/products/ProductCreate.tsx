@@ -5,8 +5,10 @@ import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productApi } from '../../api/product';
+import { categoryApi } from '../../api/category';
 import type { CreateProductInput } from '../../types/product';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
+import { useQuery } from '@tanstack/react-query';
 
 const createProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(200),
@@ -41,6 +43,11 @@ export const ProductCreate: React.FC = () => {
     onSuccess: (data) => {
       navigate(`/products/${data.data.id}`);
     },
+  });
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => categoryApi.getCategories(),
   });
 
   const onSubmit = (data: CreateProductFormValues) => {
@@ -114,12 +121,16 @@ export const ProductCreate: React.FC = () => {
         </div>
 
         <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Category ID (optional, UUID)</label>
-          <input
-            type="text"
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Category (optional)</label>
+          <select
             {...register('categoryId')}
             style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-          />
+          >
+            <option value="">No Category</option>
+            {categoriesData?.data.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
           {errors.categoryId && <p style={{ color: 'red', margin: '0.25rem 0 0' }}>{errors.categoryId.message}</p>}
         </div>
 

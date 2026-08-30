@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { productApi } from '../../api/product';
+import { categoryApi } from '../../api/category';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
 import type { ProductListParams } from '../../types/product';
@@ -20,6 +21,11 @@ export const ProductsList: React.FC = () => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['products', params],
     queryFn: () => productApi.getProducts(params),
+  });
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => categoryApi.getCategories(),
   });
 
   const handleSearch = (e: React.FormEvent) => {
@@ -47,14 +53,41 @@ export const ProductsList: React.FC = () => {
       </div>
 
       <div style={{ marginBottom: '1rem' }}>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.5rem' }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <input
             type="text"
             placeholder="Search products..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            style={{ padding: '0.5rem', flex: 1, maxWidth: '300px', border: '1px solid #ccc', borderRadius: '4px' }}
+            style={{ padding: '0.5rem', flex: 1, minWidth: '200px', border: '1px solid #ccc', borderRadius: '4px' }}
           />
+          <select
+            value={params.categoryId || ''}
+            onChange={(e) => setParams(prev => ({ ...prev, categoryId: e.target.value || undefined, page: 1 }))}
+            style={{ padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
+          >
+            <option value="">All Categories</option>
+            {categoriesData?.data.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+          <select
+            value={params.sortBy || 'createdAt'}
+            onChange={(e) => setParams(prev => ({ ...prev, sortBy: e.target.value as any, page: 1 }))}
+            style={{ padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
+          >
+            <option value="createdAt">Created At</option>
+            <option value="name">Name</option>
+            <option value="price">Price</option>
+          </select>
+          <select
+            value={params.sortOrder || 'desc'}
+            onChange={(e) => setParams(prev => ({ ...prev, sortOrder: e.target.value as any, page: 1 }))}
+            style={{ padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
+          >
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </select>
           <button type="submit" style={{ padding: '0.5rem 1rem', background: '#e0e0e0', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             Search
           </button>
