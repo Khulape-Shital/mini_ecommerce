@@ -9,26 +9,26 @@ import type {
 
 export const customerApi = {
   getCustomers: async (params?: CustomerListParams): Promise<CustomerListResponse> => {
-    const response = await apiClient.get<CustomerListResponse>('/v1/customers', { params });
+    const response = await apiClient.get<CustomerListResponse>('/customers', { params });
     return response.data;
   },
 
   getCustomerById: async (id: string): Promise<CustomerResponse> => {
-    const response = await apiClient.get<CustomerResponse>(`/v1/customers/${id}`);
+    const response = await apiClient.get<CustomerResponse>(`/customers/${id}`);
     return response.data;
   },
 
   createCustomer: async (data: CreateCustomerInput): Promise<CustomerResponse> => {
-    const response = await apiClient.post<CustomerResponse>('/v1/customers', data);
+    const response = await apiClient.post<CustomerResponse>('/customers', data);
     return response.data;
   },
 
   updateCustomer: async (id: string, data: UpdateCustomerInput): Promise<CustomerResponse> => {
-    const response = await apiClient.patch<CustomerResponse>(`/v1/customers/${id}`, data);
+    const response = await apiClient.patch<CustomerResponse>(`/customers/${id}`, data);
     return response.data;
   },
 
   deleteCustomer: async (id: string): Promise<void> => {
-    await apiClient.delete(`/v1/customers/${id}`);
+    await apiClient.delete(`/customers/${id}`);
   }
 };
