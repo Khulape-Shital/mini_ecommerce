@@ -73,7 +73,7 @@ export const ProductsList: React.FC = () => {
           </select>
           <select
             value={params.sortBy || 'createdAt'}
-            onChange={(e) => setParams(prev => ({ ...prev, sortBy: e.target.value as any, page: 1 }))}
+            onChange={(e) => setParams(prev => ({ ...prev, sortBy: e.target.value as ProductListParams['sortBy'], page: 1 }))}
             style={{ padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
           >
             <option value="createdAt">Created At</option>
@@ -82,7 +82,7 @@ export const ProductsList: React.FC = () => {
           </select>
           <select
             value={params.sortOrder || 'desc'}
-            onChange={(e) => setParams(prev => ({ ...prev, sortOrder: e.target.value as any, page: 1 }))}
+            onChange={(e) => setParams(prev => ({ ...prev, sortOrder: e.target.value as ProductListParams['sortOrder'], page: 1 }))}
             style={{ padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
           >
             <option value="desc">Descending</option>

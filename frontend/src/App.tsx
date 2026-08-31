@@ -10,6 +10,7 @@ import { CategoriesList } from './pages/categories/CategoriesList';
 import { CategoryCreate } from './pages/categories/CategoryCreate';
 import { CustomersList } from './pages/customers/CustomersList';
 import { CustomerCreate } from './pages/customers/CustomerCreate';
+import { CustomerDetail } from './pages/customers/CustomerDetail';
 import { OrdersList } from './pages/orders/OrdersList';
 import { OrderCreate } from './pages/orders/OrderCreate';
 import { OrderDetail } from './pages/orders/OrderDetail';
@@ -33,6 +34,7 @@ function App() {
             
             <Route path="customers" element={<CustomersList />} />
             <Route path="customers/new" element={<CustomerCreate />} />
+            <Route path="customers/:id" element={<CustomerDetail />} />
             
             <Route path="orders" element={<OrdersList />} />
             <Route path="orders/new" element={<OrderCreate />} />
