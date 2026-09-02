@@ -3,7 +3,9 @@ import { OrderStatus } from '../db/prisma.js';
 
 export const createOrderSchema = z.object({
   body: z.object({
-    customerId: z.string().uuid('Invalid customer ID'),
+    name: z.string().min(1, 'Name is required'),
+    email: z.string().email('Invalid email address'),
+    contact: z.string().optional(),
     items: z.array(
       z.object({
         productId: z.string().uuid('Invalid product ID'),

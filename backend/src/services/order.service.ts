@@ -3,7 +3,9 @@ import { AppError } from '../utils/AppError.js';
 import { OrderStatus, PaymentStatus, ShippingStatus, Prisma } from '../db/prisma.js';
 
 interface CreateOrderPayload {
-  customerId: string;
+  name: string;
+  email: string;
+  contact?: string;
   items: { productId: string; quantity: number }[];
   shippingAddress: string;
   couponCode?: string;
@@ -11,13 +13,14 @@ interface CreateOrderPayload {
 
 export const orderService = {
   async createOrder(payload: CreateOrderPayload) {
-    const { customerId, items, shippingAddress, couponCode } = payload;
+    const { name, email, contact, items, shippingAddress, couponCode } = payload;
 
-    // 1. Customer validation
-    const customer = await prisma.customer.findUnique({ where: { id: customerId } });
-    if (!customer) {
-      throw new AppError(404, 'CUSTOMER_NOT_FOUND', 'Customer not found');
-    }
+    // We'll create/find the customer inside the transaction to avoid orphaned records
+    // or handle it safely. For simplicity and robustness, we can just upsert the customer here.
+    // However, Prisma doesn't allow upserting a related record directly in a single `create` without `connectOrCreate`, 
+    // but `connectOrCreate` needs a unique field. `email` is unique, so we can use `connectOrCreate` on the order's `customer` relation!
+    
+    // Actually, to make it completely safe and simple, let's just use `connectOrCreate` when creating the Order.
 
     const aggregatedItems: Record<string, number> = {};
     for (const item of items) {
@@ -63,7 +66,7 @@ export const orderService = {
 
     // 4. Coupon validation and discount calculation
     let discountAmount = new Prisma.Decimal(0);
-    let couponId: string | null = null;
+    let couponId: string | undefined = undefined;
 
     if (couponCode) {
       const coupon = await prisma.coupon.findUnique({ where: { code: couponCode } });
@@ -96,30 +99,44 @@ export const orderService = {
           }
         }
 
-        // b. Create Order & related records
-        const newOrder = await tx.order.create({
-          data: {
-            customerId,
-            couponId,
-            status: OrderStatus.PENDING,
-            total,
-            discountAmount,
-            items: {
-              create: orderItemsData
-            },
-            payment: {
+        const orderData: any = {
+          customer: {
+            connectOrCreate: {
+              where: { email },
               create: {
-                status: PaymentStatus.PENDING,
-                amount: total
-              }
-            },
-            shipping: {
-              create: {
-                status: ShippingStatus.PREPARING,
-                address: shippingAddress
+                name,
+                email,
+                contact: contact || null
               }
             }
           },
+          status: OrderStatus.PENDING,
+          total,
+          discountAmount,
+          items: {
+            create: orderItemsData
+          },
+          payment: {
+            create: {
+              status: PaymentStatus.PENDING,
+              amount: total
+            }
+          },
+          shipping: {
+            create: {
+              status: ShippingStatus.PREPARING,
+              address: shippingAddress
+            }
+          }
+        };
+
+        if (couponId) {
+          orderData.couponId = couponId;
+        }
+
+        // b. Create Order & related records
+        const newOrder = await tx.order.create({
+          data: orderData,
           include: {
             items: true,
             payment: true,
