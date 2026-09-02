@@ -25,65 +25,74 @@ export const CustomersList: React.FC = () => {
   if (isError) return <ErrorDisplay message={error instanceof Error ? error.message : 'Failed to fetch customers'} />;
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Customers</h1>
-        <Link 
-          to="/customers/new" 
-          style={{ background: '#007bff', color: 'white', padding: '0.5rem 1rem', textDecoration: 'none', borderRadius: '4px' }}
-        >
-          Create Customer
+    <div className="animate-fade-in">
+      <div className="page-header">
+        <div>
+          <h1 className="text-h1">Customers</h1>
+          <p className="text-body mt-2">Manage your store's customer base.</p>
+        </div>
+        <Link to="/customers/new" className="btn btn-primary">
+          + Create Customer
         </Link>
       </div>
 
-      {data?.data.length === 0 ? (
-        <p>No customers found.</p>
-      ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
-          <thead>
-            <tr style={{ background: '#f8f9fa', textAlign: 'left' }}>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Name</th>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Email</th>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Contact</th>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.data.map((customer) => (
-              <tr key={customer.id} style={{ borderBottom: '1px solid #dee2e6' }}>
-                <td style={{ padding: '1rem' }}>{customer.name}</td>
-                <td style={{ padding: '1rem' }}>{customer.email}</td>
-                <td style={{ padding: '1rem' }}>{customer.contact || '-'}</td>
-                <td style={{ padding: '1rem' }}>
-                  <Link to={`/customers/${customer.id}`} style={{ color: '#007bff', textDecoration: 'none' }}>
-                    View / Edit
-                  </Link>
-                </td>
+      <div className="table-container">
+        {data?.data.length === 0 ? (
+          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👥</div>
+            <p className="text-h3">No customers found</p>
+          </div>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {data?.data.map((customer) => (
+                <tr key={customer.id}>
+                  <td style={{ fontWeight: '500' }}>{customer.name}</td>
+                  <td>{customer.email}</td>
+                  <td style={{ color: 'var(--text-secondary)' }}>{customer.contact || '-'}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <Link to={`/customers/${customer.id}`} className="btn btn-secondary" style={{ padding: '0.25rem 0.75rem' }}>
+                      Edit
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       {data?.meta && data.meta.totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
-          <button
-            onClick={() => handlePageChange(data.meta.page - 1)}
-            disabled={data.meta.page === 1}
-            style={{ padding: '0.5rem 1rem' }}
-          >
-            Previous
-          </button>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
-            Page {data.meta.page} of {data.meta.totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange(data.meta.page + 1)}
-            disabled={data.meta.page === data.meta.totalPages}
-            style={{ padding: '0.5rem 1rem' }}
-          >
-            Next
-          </button>
+        <div className="flex justify-between items-center" style={{ marginTop: '2rem' }}>
+          <p className="text-small">
+            Showing page <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{data.meta.page}</span> of <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{data.meta.totalPages}</span>
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handlePageChange(data.meta.page - 1)}
+              disabled={data.meta.page === 1}
+              className="btn btn-secondary"
+              style={{ opacity: data.meta.page === 1 ? 0.5 : 1, cursor: data.meta.page === 1 ? 'not-allowed' : 'pointer' }}
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => handlePageChange(data.meta.page + 1)}
+              disabled={data.meta.page === data.meta.totalPages}
+              className="btn btn-secondary"
+              style={{ opacity: data.meta.page === data.meta.totalPages ? 0.5 : 1, cursor: data.meta.page === data.meta.totalPages ? 'not-allowed' : 'pointer' }}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -41,111 +41,135 @@ export const ProductsList: React.FC = () => {
   if (isError) return <ErrorDisplay message={error instanceof Error ? error.message : 'Failed to fetch products'} />;
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Products</h1>
-        <Link 
-          to="/products/new" 
-          style={{ background: '#007bff', color: 'white', padding: '0.5rem 1rem', textDecoration: 'none', borderRadius: '4px' }}
-        >
-          Create Product
+    <div className="animate-fade-in">
+      <div className="page-header">
+        <div>
+          <h1 className="text-h1">Products</h1>
+          <p className="text-body mt-2">Manage your inventory, prices, and categories.</p>
+        </div>
+        <Link to="/products/new" className="btn btn-primary">
+          + Create Product
         </Link>
       </div>
 
-      <div style={{ marginBottom: '1rem' }}>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            style={{ padding: '0.5rem', flex: 1, minWidth: '200px', border: '1px solid #ccc', borderRadius: '4px' }}
-          />
-          <select
-            value={params.categoryId || ''}
-            onChange={(e) => setParams(prev => ({ ...prev, categoryId: e.target.value || undefined, page: 1 }))}
-            style={{ padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-          >
-            <option value="">All Categories</option>
-            {categoriesData?.data.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
-          <select
-            value={params.sortBy || 'createdAt'}
-            onChange={(e) => setParams(prev => ({ ...prev, sortBy: e.target.value as ProductListParams['sortBy'], page: 1 }))}
-            style={{ padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-          >
-            <option value="createdAt">Created At</option>
-            <option value="name">Name</option>
-            <option value="price">Price</option>
-          </select>
-          <select
-            value={params.sortOrder || 'desc'}
-            onChange={(e) => setParams(prev => ({ ...prev, sortOrder: e.target.value as ProductListParams['sortOrder'], page: 1 }))}
-            style={{ padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-          >
-            <option value="desc">Descending</option>
-            <option value="asc">Ascending</option>
-          </select>
-          <button type="submit" style={{ padding: '0.5rem 1rem', background: '#e0e0e0', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-            Search
+      <div className="card" style={{ marginBottom: '2rem', padding: '1rem' }}>
+        <form onSubmit={handleSearch} className="flex gap-4 items-center flex-wrap">
+          <div style={{ flex: '1', minWidth: '250px' }}>
+            <input
+              type="text"
+              placeholder="Search products by name or description..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="form-input"
+            />
+          </div>
+          <div style={{ minWidth: '150px' }}>
+            <select
+              value={params.categoryId || ''}
+              onChange={(e) => setParams(prev => ({ ...prev, categoryId: e.target.value || undefined, page: 1 }))}
+              className="form-select"
+            >
+              <option value="">All Categories</option>
+              {categoriesData?.data.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ minWidth: '150px' }}>
+            <select
+              value={params.sortBy || 'createdAt'}
+              onChange={(e) => setParams(prev => ({ ...prev, sortBy: e.target.value as ProductListParams['sortBy'], page: 1 }))}
+              className="form-select"
+            >
+              <option value="createdAt">Created At</option>
+              <option value="name">Name</option>
+              <option value="price">Price</option>
+            </select>
+          </div>
+          <div style={{ minWidth: '150px' }}>
+            <select
+              value={params.sortOrder || 'desc'}
+              onChange={(e) => setParams(prev => ({ ...prev, sortOrder: e.target.value as ProductListParams['sortOrder'], page: 1 }))}
+              className="form-select"
+            >
+              <option value="desc">Descending</option>
+              <option value="asc">Ascending</option>
+            </select>
+          </div>
+          <button type="submit" className="btn btn-secondary" style={{ height: '42px' }}>
+            Filter
           </button>
         </form>
       </div>
 
-      {data?.data.length === 0 ? (
-        <p>No products found.</p>
-      ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
-          <thead>
-            <tr style={{ background: '#f8f9fa', textAlign: 'left' }}>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Name</th>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Description</th>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Price</th>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Quantity</th>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Category</th>
-              <th style={{ padding: '1rem', borderBottom: '2px solid #dee2e6' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.data.map((product) => (
-              <tr key={product.id} style={{ borderBottom: '1px solid #dee2e6' }}>
-                <td style={{ padding: '1rem' }}>{product.name}</td>
-                <td style={{ padding: '1rem' }}>{product.description || '-'}</td>
-                <td style={{ padding: '1rem' }}>${Number(product.price).toFixed(2)}</td>
-                <td style={{ padding: '1rem' }}>{product.quantity}</td>
-                <td style={{ padding: '1rem' }}>{product.category?.name || '-'}</td>
-                <td style={{ padding: '1rem' }}>
-                  <Link to={`/products/${product.id}`} style={{ color: '#007bff', textDecoration: 'none' }}>
-                    View / Edit
-                  </Link>
-                </td>
+      <div className="table-container">
+        {data?.data.length === 0 ? (
+          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
+            <p className="text-h3">No products found</p>
+            <p className="text-body mt-2">Try adjusting your filters or search query.</p>
+          </div>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {data?.data.map((product) => (
+                <tr key={product.id}>
+                  <td style={{ fontWeight: '500' }}>{product.name}</td>
+                  <td style={{ color: 'var(--text-secondary)' }}>
+                    {product.description ? (product.description.length > 50 ? `${product.description.substring(0, 50)}...` : product.description) : '-'}
+                  </td>
+                  <td style={{ fontWeight: '600' }}>${Number(product.price).toFixed(2)}</td>
+                  <td>
+                    <span className="badge" style={{ backgroundColor: product.quantity > 10 ? 'var(--accent-light)' : 'rgba(245, 158, 11, 0.1)', color: product.quantity > 10 ? 'var(--accent-primary)' : 'var(--warning)' }}>
+                      {product.quantity} in stock
+                    </span>
+                  </td>
+                  <td>{product.category?.name || '-'}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <Link to={`/products/${product.id}`} className="btn btn-secondary" style={{ padding: '0.25rem 0.75rem' }}>
+                      Edit
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       {data?.meta && data.meta.totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
-          <button
-            onClick={() => handlePageChange(data.meta.page - 1)}
-            disabled={data.meta.page === 1}
-            style={{ padding: '0.5rem 1rem' }}
-          >
-            Previous
-          </button>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
-            Page {data.meta.page} of {data.meta.totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange(data.meta.page + 1)}
-            disabled={data.meta.page === data.meta.totalPages}
-            style={{ padding: '0.5rem 1rem' }}
-          >
-            Next
-          </button>
+        <div className="flex justify-between items-center" style={{ marginTop: '2rem' }}>
+          <p className="text-small">
+            Showing page <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{data.meta.page}</span> of <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{data.meta.totalPages}</span>
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handlePageChange(data.meta.page - 1)}
+              disabled={data.meta.page === 1}
+              className="btn btn-secondary"
+              style={{ opacity: data.meta.page === 1 ? 0.5 : 1, cursor: data.meta.page === 1 ? 'not-allowed' : 'pointer' }}
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => handlePageChange(data.meta.page + 1)}
+              disabled={data.meta.page === data.meta.totalPages}
+              className="btn btn-secondary"
+              style={{ opacity: data.meta.page === data.meta.totalPages ? 0.5 : 1, cursor: data.meta.page === data.meta.totalPages ? 'not-allowed' : 'pointer' }}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>
