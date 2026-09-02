@@ -10,7 +10,7 @@ export interface Product {
   id: string;
   name: string;
   description?: string | null;
-  price: number;
+  price: string;
   quantity: number;
   categoryId?: string | null;
   category?: Category | null;

@@ -51,7 +51,7 @@ export const ProductDetail: React.FC = () => {
       reset({
         name: data.data.name,
         description: data.data.description || '',
-        price: data.data.price,
+        price: Number(data.data.price),
         quantity: data.data.quantity,
         categoryId: data.data.categoryId || '',
       });
@@ -136,7 +136,7 @@ export const ProductDetail: React.FC = () => {
           <div style={{ background: '#f8f9fa', padding: '1.5rem', borderRadius: '4px', marginBottom: '1.5rem' }}>
             <p><strong>Name:</strong> {product.name}</p>
             <p><strong>Description:</strong> {product.description || '-'}</p>
-            <p><strong>Price:</strong> ${product.price.toFixed(2)}</p>
+            <p><strong>Price:</strong> ${Number(product.price).toFixed(2)}</p>
             <p><strong>Quantity:</strong> {product.quantity}</p>
             <p><strong>Category:</strong> {product.category?.name || product.categoryId || 'None'}</p>
             <p><strong>Created At:</strong> {new Date(product.createdAt).toLocaleString()}</p>

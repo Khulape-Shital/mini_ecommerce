@@ -113,7 +113,7 @@ export const ProductsList: React.FC = () => {
               <tr key={product.id} style={{ borderBottom: '1px solid #dee2e6' }}>
                 <td style={{ padding: '1rem' }}>{product.name}</td>
                 <td style={{ padding: '1rem' }}>{product.description || '-'}</td>
-                <td style={{ padding: '1rem' }}>${product.price.toFixed(2)}</td>
+                <td style={{ padding: '1rem' }}>${Number(product.price).toFixed(2)}</td>
                 <td style={{ padding: '1rem' }}>{product.quantity}</td>
                 <td style={{ padding: '1rem' }}>{product.category?.name || '-'}</td>
                 <td style={{ padding: '1rem' }}>
