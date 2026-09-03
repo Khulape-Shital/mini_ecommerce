@@ -1,7 +1,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { useQuery } from '@tanstack/react-query';
+import { orderApi } from '../api/order';
+import { customerApi } from '../api/customer';
+
 export const Dashboard: React.FC = () => {
+  const { data: pendingOrders, isLoading: isLoadingPending } = useQuery({
+    queryKey: ['dashboard_orders', 'PENDING'],
+    queryFn: () => orderApi.getOrders({ limit: 1, status: 'PENDING' })
+  });
+
+  const { data: confirmedOrders, isLoading: isLoadingConfirmed } = useQuery({
+    queryKey: ['dashboard_orders', 'CONFIRMED'],
+    queryFn: () => orderApi.getOrders({ limit: 1, status: 'CONFIRMED' })
+  });
+
+  const { data: shippedOrders, isLoading: isLoadingShipped } = useQuery({
+    queryKey: ['dashboard_orders', 'SHIPPED'],
+    queryFn: () => orderApi.getOrders({ limit: 1, status: 'SHIPPED' })
+  });
+
+  const { data: customersData, isLoading: isLoadingCustomers } = useQuery({
+    queryKey: ['dashboard_customers'],
+    queryFn: () => customerApi.getCustomers({ limit: 1 })
+  });
+
+  const isLoadingOrders = isLoadingPending || isLoadingConfirmed || isLoadingShipped;
+  const activeOrdersCount = (pendingOrders?.meta?.total || 0) + 
+                            (confirmedOrders?.meta?.total || 0) + 
+                            (shippedOrders?.meta?.total || 0);
+
+
   return (
     <div>
       <div className="page-header">
@@ -37,7 +67,9 @@ export const Dashboard: React.FC = () => {
             <h3 className="text-small" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Orders</h3>
             <span style={{ fontSize: '1.5rem' }}>📦</span>
           </div>
-          <div className="text-h2" style={{ color: 'var(--text-primary)' }}>+12,234</div>
+          <div className="text-h2" style={{ color: 'var(--text-primary)' }}>
+            {isLoadingOrders ? '...' : activeOrdersCount}
+          </div>
           <div className="text-small" style={{ color: 'var(--success)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <span>↑</span> 15% from last month
           </div>
@@ -48,7 +80,9 @@ export const Dashboard: React.FC = () => {
             <h3 className="text-small" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>New Customers</h3>
             <span style={{ fontSize: '1.5rem' }}>👥</span>
           </div>
-          <div className="text-h2" style={{ color: 'var(--text-primary)' }}>+573</div>
+          <div className="text-h2" style={{ color: 'var(--text-primary)' }}>
+            {isLoadingCustomers ? '...' : (customersData?.meta?.total || 0)}
+          </div>
           <div className="text-small" style={{ color: 'var(--danger)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <span>↓</span> 2.1% from last month
           </div>
