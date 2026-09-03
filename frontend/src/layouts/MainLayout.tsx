@@ -1,5 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Button } from '../components/ui/Button';
 
 export const MainLayout: React.FC = () => {
   const location = useLocation();
@@ -103,9 +104,9 @@ export const MainLayout: React.FC = () => {
           }}
         >
           <div className="flex items-center gap-4">
-            <button className="btn btn-secondary" style={{ borderRadius: 'var(--radius-full)', padding: '0.5rem', width: '40px', height: '40px' }}>
+            <Button className="btn btn-secondary" style={{ borderRadius: 'var(--radius-full)', padding: '0.5rem', width: '40px', height: '40px' }}>
               🔔
-            </button>
+            </Button>
           </div>
         </header>
         <div style={{ padding: '2rem', flex: 1, overflowY: 'auto' }}>

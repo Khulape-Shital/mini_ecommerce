@@ -5,6 +5,9 @@ import { orderApi } from '../../api/order';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
 import { MessageAlert } from '../../components/MessageAlert';
+import { Button } from '../../components/ui/Button';
+import { Dropdown } from '../../components/ui/Dropdown';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 const VALID_TRANSITIONS: Record<string, string[]> = {
   PENDING: ['CONFIRMED', 'CANCELLED'],
@@ -46,10 +49,9 @@ export const OrderDetail: React.FC = () => {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 className="text-h1">Order Details</h1>
-        <button className="btn btn-secondary" onClick={() => navigate('/orders')}>Back to Orders</button>
-      </div>
+      <PageHeader title="Order Details">
+        <Button className="btn btn-secondary" onClick={() => navigate('/orders')}>Back to Orders</Button>
+      </PageHeader>
 
       {message && (
         <MessageAlert 
@@ -68,16 +70,18 @@ export const OrderDetail: React.FC = () => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <label className="form-label" style={{ margin: 0 }}>Status:</label>
-              <select 
+              <Dropdown 
                 className="form-select"
                 value={order.status}
                 onChange={(e) => updateStatusMutation.mutate(e.target.value)}
                 disabled={updateStatusMutation.isPending || VALID_TRANSITIONS[order.status]?.length === 0}
-              >
-                {[order.status, ...(VALID_TRANSITIONS[order.status] || [])].map(status => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
+                options={[
+                  ...([order.status, ...(VALID_TRANSITIONS[order.status] || [])].map(status => ({
+                    value: status,
+                    label: status
+                  })))
+                ]}
+              />
             </div>
             {updateStatusMutation.isPending && <span className="text-body-secondary" style={{ fontSize: '0.8rem' }}>Updating...</span>}
           </div>

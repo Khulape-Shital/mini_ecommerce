@@ -8,6 +8,7 @@ import { customerApi } from '../../api/customer';
 import type { CreateCustomerInput } from '../../types/customer';
 import { Button } from '../../components/ui/Button';
 import { InputField } from '../../components/ui/InputField';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 const createCustomerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters long'),
@@ -37,11 +38,11 @@ export const CustomerCreate: React.FC = () => {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '640px', margin: '2rem auto' }}>
-      <div className="page-header" style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-        <h1 className="text-h1" style={{ background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          Create Customer
-        </h1>
-        <p className="text-body mt-2">Add a new customer to your Shopora store.</p>
+      <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+        <PageHeader
+          title="Create Customer"
+          description="Add a new customer to your Shopora store."
+        />
       </div>
 
       {mutation.isError && (
@@ -55,19 +56,19 @@ export const CustomerCreate: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="flex-col">
           <InputField
             label="Full Name"
-            placeholder="e.g. John Doe"
+            placeholder="e.g. Shital R Khulape"
             error={errors.name?.message}
             {...register('name')}
           />
-          
+
           <InputField
             type="email"
             label="Email Address"
-            placeholder="e.g. john@example.com"
+            placeholder="e.g. shital@example.com"
             error={errors.email?.message}
             {...register('email')}
           />
-          
+
           <InputField
             label="Contact Number (Optional)"
             placeholder="e.g. +1 234 567 8900"
@@ -76,15 +77,15 @@ export const CustomerCreate: React.FC = () => {
           />
 
           <div className="flex gap-4" style={{ paddingTop: '2rem', borderTop: '1px solid var(--border-color)', justifyContent: 'flex-end' }}>
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               onClick={() => navigate('/customers')}
               variant="secondary"
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={mutation.isPending}
               variant="primary"
               style={{ minWidth: '140px' }}

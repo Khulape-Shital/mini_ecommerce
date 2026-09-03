@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { categoryApi } from '../../api/category';
 import { Button } from '../../components/ui/Button';
 import { InputField } from '../../components/ui/InputField';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 const createCategorySchema = z.object({
   name: z.string().min(1, 'Category name is required').max(100, 'Name must be 100 characters or less'),
@@ -36,9 +37,7 @@ export const CategoryCreate: React.FC = () => {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <div className="page-header">
-        <h1 className="text-h2">Create Category</h1>
-      </div>
+      <PageHeader title="Create Category" titleSize="h2" />
 
       <div className="card">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">

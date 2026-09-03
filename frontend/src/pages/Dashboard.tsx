@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { PageHeader } from '../components/ui/PageHeader';
 
 import { useQuery } from '@tanstack/react-query';
 import { orderApi } from '../api/order';
@@ -50,11 +51,10 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <div className="page-header">
-        <div>
-          <h1 className="text-h1">Dashboard</h1>
-          <p className="text-body mt-2">Welcome back to your Shopora store overview.</p>
-        </div>
+      <PageHeader 
+        title="Dashboard" 
+        description="Welcome back to your Shopora store overview."
+      >
         <div className="flex gap-4">
           <Link to="/products/new" className="btn btn-primary">
             + New Product
@@ -63,7 +63,7 @@ export const Dashboard: React.FC = () => {
             View Orders
           </Link>
         </div>
-      </div>
+      </PageHeader>
 
       <div className="dashboard-grid">
         {/* Metric Cards */}

@@ -8,6 +8,9 @@ import { customerApi } from '../../api/customer';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
 import type { UpdateCustomerInput } from '../../types/customer';
+import { Button } from '../../components/ui/Button';
+import { InputField } from '../../components/ui/InputField';
+import { MessageAlert } from '../../components/MessageAlert';
 
 const updateCustomerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters long').optional(),
@@ -20,6 +23,7 @@ export const CustomerDetail: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['customers', id],
@@ -61,9 +65,7 @@ export const CustomerDetail: React.FC = () => {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this customer?')) {
-      deleteMutation.mutate();
-    }
+    setShowDeleteConfirm(true);
   };
 
   return (
@@ -72,19 +74,19 @@ export const CustomerDetail: React.FC = () => {
         <h1>Customer Details</h1>
         <div>
           {!isEditing && (
-            <button 
+            <Button 
               onClick={() => setIsEditing(true)}
               style={{ background: '#007bff', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '0.5rem' }}
             >
               Edit
-            </button>
+            </Button>
           )}
-          <button 
+          <Button 
             onClick={handleDelete}
             style={{ background: '#dc3545', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
           >
             Delete
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -96,18 +98,18 @@ export const CustomerDetail: React.FC = () => {
           <p><strong>Contact:</strong> {data.data.contact || '-'}</p>
           <p><strong>Created At:</strong> {new Date(data.data.createdAt).toLocaleString()}</p>
           <p><strong>Updated At:</strong> {new Date(data.data.updatedAt).toLocaleString()}</p>
-          <button 
+          <Button 
             onClick={() => navigate('/customers')}
             style={{ marginTop: '2rem', background: '#6c757d', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
           >
             Back to List
-          </button>
+          </Button>
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem' }}>Name</label>
-            <input 
+            <InputField 
               {...register('name')} 
               style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
             />
@@ -116,7 +118,7 @@ export const CustomerDetail: React.FC = () => {
           
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem' }}>Email</label>
-            <input 
+            <InputField 
               type="email"
               {...register('email')} 
               style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
@@ -126,7 +128,7 @@ export const CustomerDetail: React.FC = () => {
           
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem' }}>Contact (Optional)</label>
-            <input 
+            <InputField 
               {...register('contact')} 
               style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
             />
@@ -140,14 +142,14 @@ export const CustomerDetail: React.FC = () => {
           )}
 
           <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-            <button 
+            <Button 
               type="submit" 
               disabled={updateMutation.isPending}
               style={{ background: '#28a745', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: updateMutation.isPending ? 'not-allowed' : 'pointer' }}
             >
               {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
-            </button>
-            <button 
+            </Button>
+            <Button 
               type="button" 
               onClick={() => {
                 reset();
@@ -156,9 +158,24 @@ export const CustomerDetail: React.FC = () => {
               style={{ background: '#6c757d', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </form>
+      )}
+
+      {showDeleteConfirm && (
+        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, minWidth: '320px', maxWidth: '400px' }}>
+          <MessageAlert 
+            type="warning" 
+            message="Are you sure you want to delete this customer?" 
+            actionText="Confirm Delete"
+            onAction={() => {
+              deleteMutation.mutate();
+              setShowDeleteConfirm(false);
+            }}
+            onDismiss={() => setShowDeleteConfirm(false)} 
+          />
+        </div>
       )}
     </div>
   );

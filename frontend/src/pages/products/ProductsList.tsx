@@ -5,6 +5,10 @@ import { productApi } from '../../api/product';
 import { categoryApi } from '../../api/category';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
+import { Button } from '../../components/ui/Button';
+import { InputField } from '../../components/ui/InputField';
+import { Dropdown } from '../../components/ui/Dropdown';
+import { PageHeader } from '../../components/ui/PageHeader';
 import type { ProductListParams } from '../../types/product';
 
 export const ProductsList: React.FC = () => {
@@ -42,20 +46,19 @@ export const ProductsList: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="page-header">
-        <div>
-          <h1 className="text-h1">Products</h1>
-          <p className="text-body mt-2">Manage your inventory, prices, and categories.</p>
-        </div>
+      <PageHeader 
+        title="Products" 
+        description="Manage your inventory, prices, and categories."
+      >
         <Link to="/products/new" className="btn btn-primary">
           + Create Product
         </Link>
-      </div>
+      </PageHeader>
 
       <div className="card" style={{ marginBottom: '2rem', padding: '1rem' }}>
         <form onSubmit={handleSearch} className="flex gap-4 items-center flex-wrap">
           <div style={{ flex: '1', minWidth: '250px' }}>
-            <input
+            <InputField
               type="text"
               placeholder="Search products by name or description..."
               value={searchInput}
@@ -64,41 +67,42 @@ export const ProductsList: React.FC = () => {
             />
           </div>
           <div style={{ minWidth: '150px' }}>
-            <select
+            <Dropdown
               value={params.categoryId || ''}
               onChange={(e) => setParams(prev => ({ ...prev, categoryId: e.target.value || undefined, page: 1 }))}
               className="form-select"
-            >
-              <option value="">All Categories</option>
-              {categoriesData?.data.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: 'All Categories' },
+                ...(categoriesData?.data.map(cat => ({ value: cat.id, label: cat.name })) || [])
+              ]}
+            />
           </div>
           <div style={{ minWidth: '150px' }}>
-            <select
+            <Dropdown
               value={params.sortBy || 'createdAt'}
               onChange={(e) => setParams(prev => ({ ...prev, sortBy: e.target.value as ProductListParams['sortBy'], page: 1 }))}
               className="form-select"
-            >
-              <option value="createdAt">Created At</option>
-              <option value="name">Name</option>
-              <option value="price">Price</option>
-            </select>
+              options={[
+                { value: 'createdAt', label: 'Created At' },
+                { value: 'name', label: 'Name' },
+                { value: 'price', label: 'Price' }
+              ]}
+            />
           </div>
           <div style={{ minWidth: '150px' }}>
-            <select
+            <Dropdown
               value={params.sortOrder || 'desc'}
               onChange={(e) => setParams(prev => ({ ...prev, sortOrder: e.target.value as ProductListParams['sortOrder'], page: 1 }))}
               className="form-select"
-            >
-              <option value="desc">Descending</option>
-              <option value="asc">Ascending</option>
-            </select>
+              options={[
+                { value: 'desc', label: 'Descending' },
+                { value: 'asc', label: 'Ascending' }
+              ]}
+            />
           </div>
-          <button type="submit" className="btn btn-secondary" style={{ height: '42px' }}>
+          <Button type="submit" className="btn btn-secondary" style={{ height: '42px' }}>
             Filter
-          </button>
+          </Button>
         </form>
       </div>
 
@@ -168,22 +172,22 @@ export const ProductsList: React.FC = () => {
             Showing page <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{data.meta.page}</span> of <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{data.meta.totalPages}</span>
           </p>
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => handlePageChange(data.meta.page - 1)}
               disabled={data.meta.page === 1}
               className="btn btn-secondary"
               style={{ opacity: data.meta.page === 1 ? 0.5 : 1, cursor: data.meta.page === 1 ? 'not-allowed' : 'pointer' }}
             >
               Previous
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => handlePageChange(data.meta.page + 1)}
               disabled={data.meta.page === data.meta.totalPages}
               className="btn btn-secondary"
               style={{ opacity: data.meta.page === data.meta.totalPages ? 0.5 : 1, cursor: data.meta.page === data.meta.totalPages ? 'not-allowed' : 'pointer' }}
             >
               Next
-            </button>
+            </Button>
           </div>
         </div>
       )}

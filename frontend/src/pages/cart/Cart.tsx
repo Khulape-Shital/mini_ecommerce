@@ -1,6 +1,8 @@
 import React from 'react';
 import { useCart } from '../../store/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '../../components/ui/Button';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 export const Cart: React.FC = () => {
   const { items, updateQuantity, removeFromCart, totalAmount } = useCart();
@@ -8,8 +10,8 @@ export const Cart: React.FC = () => {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '900px', margin: '0 auto' }}>
-      <div className="page-header" style={{ marginBottom: '2rem' }}>
-        <h1 className="text-h1">Shopping Cart</h1>
+      <div style={{ marginBottom: '2rem' }}>
+        <PageHeader title="Shopping Cart" />
       </div>
 
       {items.length === 0 ? (
@@ -47,36 +49,36 @@ export const Cart: React.FC = () => {
                   <td>₹{Number(item.price).toFixed(2)}</td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <button 
+                      <Button 
                         className="btn btn-secondary" 
                         style={{ padding: '0.25rem 0.5rem' }}
                         onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                         disabled={item.quantity <= 1}
                       >
                         -
-                      </button>
+                      </Button>
                       <span style={{ minWidth: '2rem', textAlign: 'center' }}>{item.quantity}</span>
-                      <button 
+                      <Button 
                         className="btn btn-secondary" 
                         style={{ padding: '0.25rem 0.5rem' }}
                         onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                         disabled={item.quantity >= item.availableStock}
                       >
                         +
-                      </button>
+                      </Button>
                     </div>
                   </td>
                   <td style={{ fontWeight: '600' }}>
                     ₹{(Number(item.price) * item.quantity).toFixed(2)}
                   </td>
                   <td>
-                    <button 
+                    <Button 
                       className="btn" 
                       style={{ color: 'var(--danger)', padding: '0.25rem 0.5rem' }}
                       onClick={() => removeFromCart(item.productId)}
                     >
                       Remove
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -89,12 +91,12 @@ export const Cart: React.FC = () => {
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
               <Link to="/shop" className="btn btn-secondary">Continue Shopping</Link>
-              <button 
+              <Button 
                 className="btn btn-primary"
                 onClick={() => navigate('/orders/new')}
               >
                 Proceed to Checkout
-              </button>
+              </Button>
             </div>
           </div>
         </div>

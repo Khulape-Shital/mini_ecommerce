@@ -9,6 +9,10 @@ import { categoryApi } from '../../api/category';
 import type { UpdateProductInput } from '../../types/product';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
+import { Button } from '../../components/ui/Button';
+import { InputField } from '../../components/ui/InputField';
+import { Dropdown } from '../../components/ui/Dropdown';
+import { MessageAlert } from '../../components/MessageAlert';
 
 const updateProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(200),
@@ -29,6 +33,7 @@ export const ProductDetail: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['product', id],
@@ -138,9 +143,7 @@ export const ProductDetail: React.FC = () => {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      deleteMutation.mutate();
-    }
+    setShowDeleteConfirm(true);
   };
 
   if (isLoading) return <LoadingSpinner />;
@@ -153,7 +156,7 @@ export const ProductDetail: React.FC = () => {
     <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem 1rem', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 style={{ margin: 0, fontSize: '2rem', color: '#111827', fontWeight: 700, letterSpacing: '-0.025em' }}>Product Detail</h1>
-        <button
+        <Button
           onClick={() => navigate('/products')}
           style={{ 
             padding: '0.625rem 1.25rem', 
@@ -172,7 +175,7 @@ export const ProductDetail: React.FC = () => {
           }}
         >
           &larr; Back to List
-        </button>
+        </Button>
       </div>
 
       {updateMutation.isError && (
@@ -317,7 +320,7 @@ export const ProductDetail: React.FC = () => {
 
               {/* Actions */}
               <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
-                <button
+                <Button
                   onClick={() => setIsEditing(true)}
                   style={{ 
                     flex: 1, 
@@ -333,8 +336,9 @@ export const ProductDetail: React.FC = () => {
                   }}
                 >
                   Edit Product
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="secondary"
                   onClick={handleDelete}
                   disabled={deleteMutation.isPending}
                   style={{
@@ -351,7 +355,7 @@ export const ProductDetail: React.FC = () => {
                   }}
                 >
                   {deleteMutation.isPending ? 'Deleting...' : 'Delete Product'}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -371,7 +375,7 @@ export const ProductDetail: React.FC = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155', fontSize: '0.9375rem' }}>Product Name</label>
-                <input
+                <InputField
                   type="text"
                   {...register('name')}
                   style={{ width: '100%', padding: '0.75rem 1rem', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box', fontSize: '1rem', color: '#0f172a', backgroundColor: '#f8fafc' }}
@@ -381,15 +385,14 @@ export const ProductDetail: React.FC = () => {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155', fontSize: '0.9375rem' }}>Category</label>
-                <select
+                <Dropdown
                   {...register('categoryId')}
                   style={{ width: '100%', padding: '0.75rem 1rem', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box', fontSize: '1rem', color: '#0f172a', backgroundColor: '#f8fafc' }}
-                >
-                  <option value="">No Category</option>
-                  {categoriesData?.data.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
+                  options={[
+                    { value: '', label: 'No Category' },
+                    ...(categoriesData?.data.map(cat => ({ value: cat.id, label: cat.name })) || [])
+                  ]}
+                />
                 {errors.categoryId && <p style={{ color: '#ef4444', margin: '0.375rem 0 0', fontSize: '0.875rem', fontWeight: 500 }}>{errors.categoryId.message}</p>}
               </div>
             </div>
@@ -397,7 +400,7 @@ export const ProductDetail: React.FC = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155', fontSize: '0.9375rem' }}>Price (₹)</label>
-                <input
+                <InputField
                   type="number"
                   step="0.01"
                   {...register('price', { valueAsNumber: true })}
@@ -408,7 +411,7 @@ export const ProductDetail: React.FC = () => {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155', fontSize: '0.9375rem' }}>Stock Quantity</label>
-                <input
+                <InputField
                   type="number"
                   {...register('quantity', { valueAsNumber: true })}
                   style={{ width: '100%', padding: '0.75rem 1rem', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box', fontSize: '1rem', color: '#0f172a', backgroundColor: '#f8fafc' }}
@@ -451,7 +454,7 @@ export const ProductDetail: React.FC = () => {
                         alt="Preview" 
                         style={{ width: '140px', height: '140px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
                       />
-                      <button
+                      <Button
                         type="button"
                         onClick={() => {
                           setImagePreview(null);
@@ -467,7 +470,7 @@ export const ProductDetail: React.FC = () => {
                         title="Remove image"
                       >
                         &times;
-                      </button>
+                      </Button>
                     </div>
                   )}
                   {removeImage && (
@@ -485,7 +488,7 @@ export const ProductDetail: React.FC = () => {
             </div>
 
             <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '2rem' }}>
-              <button
+              <Button
                 type="submit"
                 disabled={updateMutation.isPending}
                 style={{
@@ -502,8 +505,8 @@ export const ProductDetail: React.FC = () => {
                 }}
               >
                 {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setIsEditing(false)}
                 style={{
@@ -519,9 +522,24 @@ export const ProductDetail: React.FC = () => {
                 }}
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </form>
+        </div>
+      )}
+
+      {showDeleteConfirm && (
+        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, minWidth: '320px', maxWidth: '400px' }}>
+          <MessageAlert 
+            type="warning" 
+            message="Are you sure you want to delete this product?" 
+            actionText="Confirm Delete"
+            onAction={() => {
+              deleteMutation.mutate();
+              setShowDeleteConfirm(false);
+            }}
+            onDismiss={() => setShowDeleteConfirm(false)} 
+          />
         </div>
       )}
     </div>

@@ -10,6 +10,7 @@ import { useCart } from '../../store/CartContext';
 import { Button } from '../../components/ui/Button';
 import { InputField } from '../../components/ui/InputField';
 import { Dropdown } from '../../components/ui/Dropdown';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 export const OrderCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -82,9 +83,7 @@ export const OrderCreate: React.FC = () => {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div className="page-header">
-        <h1 className="text-h1">Checkout</h1>
-      </div>
+      <PageHeader title="Checkout" />
 
       {message && (
         <MessageAlert 

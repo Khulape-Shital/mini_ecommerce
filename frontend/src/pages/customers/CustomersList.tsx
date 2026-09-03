@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { customerApi } from '../../api/customer';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
+import { Button } from '../../components/ui/Button';
+import { PageHeader } from '../../components/ui/PageHeader';
 import type { CustomerListParams } from '../../types/customer';
 
 export const CustomersList: React.FC = () => {
@@ -26,15 +28,14 @@ export const CustomersList: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="page-header">
-        <div>
-          <h1 className="text-h1">Customers</h1>
-          <p className="text-body mt-2">Manage your store's customer base.</p>
-        </div>
+      <PageHeader 
+        title="Customers" 
+        description="Manage your store's customer base."
+      >
         <Link to="/customers/new" className="btn btn-primary">
           + Create Customer
         </Link>
-      </div>
+      </PageHeader>
 
       <div className="table-container">
         {data?.data.length === 0 ? (
@@ -76,22 +77,22 @@ export const CustomersList: React.FC = () => {
             Showing page <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{data.meta.page}</span> of <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{data.meta.totalPages}</span>
           </p>
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => handlePageChange(data.meta.page - 1)}
               disabled={data.meta.page === 1}
               className="btn btn-secondary"
               style={{ opacity: data.meta.page === 1 ? 0.5 : 1, cursor: data.meta.page === 1 ? 'not-allowed' : 'pointer' }}
             >
               Previous
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => handlePageChange(data.meta.page + 1)}
               disabled={data.meta.page === data.meta.totalPages}
               className="btn btn-secondary"
               style={{ opacity: data.meta.page === data.meta.totalPages ? 0.5 : 1, cursor: data.meta.page === data.meta.totalPages ? 'not-allowed' : 'pointer' }}
             >
               Next
-            </button>
+            </Button>
           </div>
         </div>
       )}

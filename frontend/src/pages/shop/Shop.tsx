@@ -5,6 +5,10 @@ import { categoryApi } from '../../api/category';
 import { useCart } from '../../store/CartContext';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
+import { Button } from '../../components/ui/Button';
+import { InputField } from '../../components/ui/InputField';
+import { MessageAlert } from '../../components/MessageAlert';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -21,6 +25,8 @@ export const Shop: React.FC = () => {
   const { addToCart } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertTimeout, setAlertTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
   
   const debouncedSearch = useDebounce(searchTerm, 300);
 
@@ -49,15 +55,17 @@ export const Shop: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="page-header" style={{ marginBottom: '2rem' }}>
-        <h1 className="text-h1">Shop</h1>
-        <p className="text-body mt-2">Browse our latest products.</p>
+      <div style={{ marginBottom: '2rem' }}>
+        <PageHeader 
+          title="Shop" 
+          description="Browse our latest products."
+        />
       </div>
 
       <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div>
           <label className="form-label">Search Products</label>
-          <input
+          <InputField
             type="text"
             className="form-input"
             placeholder="Search by name..."
@@ -68,22 +76,22 @@ export const Shop: React.FC = () => {
         <div>
           <label className="form-label" style={{ marginBottom: '0.75rem', display: 'block' }}>Categories</label>
           <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
-            <button
+            <Button
               className={`btn ${selectedCategory === '' ? 'btn-primary' : 'btn-secondary'}`}
               style={{ borderRadius: 'var(--radius-full)', whiteSpace: 'nowrap' }}
               onClick={() => setSelectedCategory('')}
             >
               All Categories
-            </button>
+            </Button>
             {categories.map((cat) => (
-              <button
+              <Button
                 key={cat.id}
                 className={`btn ${selectedCategory === cat.id ? 'btn-primary' : 'btn-secondary'}`}
                 style={{ borderRadius: 'var(--radius-full)', whiteSpace: 'nowrap' }}
                 onClick={() => setSelectedCategory(cat.id)}
               >
                 {cat.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -140,7 +148,7 @@ export const Shop: React.FC = () => {
                     {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
                   </span>
                   
-                  <button 
+                  <Button 
                     className="btn btn-primary" 
                     disabled={product.quantity <= 0} 
                     style={{ 
@@ -159,7 +167,15 @@ export const Shop: React.FC = () => {
                         price: product.price,
                         availableStock: product.quantity,
                       });
-                      window.alert(`${product.name} has been added to your cart!`);
+                      setAlertMessage(`${product.name} has been added to your cart!`);
+                      
+                      if (alertTimeout) {
+                        clearTimeout(alertTimeout);
+                      }
+                      const timeoutId = setTimeout(() => {
+                        setAlertMessage(null);
+                      }, 4000);
+                      setAlertTimeout(timeoutId);
                     }}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -168,11 +184,21 @@ export const Shop: React.FC = () => {
                       <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                     </svg>
                     Add to Cart
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {alertMessage && (
+        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, minWidth: '320px', maxWidth: '400px' }}>
+          <MessageAlert 
+            type="success" 
+            message={alertMessage} 
+            onDismiss={() => setAlertMessage(null)} 
+          />
         </div>
       )}
     </div>

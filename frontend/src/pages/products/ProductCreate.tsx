@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '../../components/ui/Button';
 import { InputField } from '../../components/ui/InputField';
 import { Dropdown } from '../../components/ui/Dropdown';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 const createProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(200),
@@ -48,7 +49,7 @@ export const ProductCreate: React.FC = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setImageError(null);
-    
+
     if (!file) {
       setImagePreview(null);
       return;
@@ -95,11 +96,11 @@ export const ProductCreate: React.FC = () => {
       price: data.price,
       quantity: data.quantity,
     };
-    
+
     if (data.description) {
       payload.description = data.description;
     }
-    
+
     if (data.categoryId && data.categoryId.trim() !== '') {
       payload.categoryId = data.categoryId;
     }
@@ -113,9 +114,7 @@ export const ProductCreate: React.FC = () => {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div className="page-header">
-        <h1 className="text-h2">Create Product</h1>
-      </div>
+      <PageHeader title="Create Product" titleSize="h2" />
 
       {mutation.isError && (
         <div style={{ marginBottom: '1.5rem' }}>
@@ -128,7 +127,7 @@ export const ProductCreate: React.FC = () => {
           <InputField
             label="Name"
             type="text"
-            placeholder="e.g. Wireless Headphones"
+            placeholder="e.g.Ethnic Wear"
             error={errors.name?.message}
             {...register('name')}
           />
@@ -149,7 +148,7 @@ export const ProductCreate: React.FC = () => {
               <label className="form-label">Price</label>
               <div style={{ position: 'relative' }}>
                 <span style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }}>₹</span>
-                <input
+                <InputField
                   type="number"
                   step="0.01"
                   className="form-input"
@@ -197,12 +196,12 @@ export const ProductCreate: React.FC = () => {
             />
             <p className="text-small" style={{ color: 'var(--text-tertiary)', marginTop: '0.25rem' }}>Max size: 2MB. Supported formats: JPEG, PNG, WEBP.</p>
             {imageError && <p className="text-small" style={{ color: 'var(--danger)', marginTop: '0.25rem' }}>{imageError}</p>}
-            
+
             {imagePreview && (
               <div style={{ marginTop: '1rem', position: 'relative', display: 'inline-block' }}>
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
+                <img
+                  src={imagePreview}
+                  alt="Preview"
                   style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-color)' }}
                 />
                 <Button

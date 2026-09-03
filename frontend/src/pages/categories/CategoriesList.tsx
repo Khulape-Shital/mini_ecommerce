@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { categoryApi } from '../../api/category';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 export const CategoriesList: React.FC = () => {
   const { data, isLoading, isError, error } = useQuery({
@@ -16,15 +17,14 @@ export const CategoriesList: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      <div className="page-header">
-        <div>
-          <h1 className="text-h1">Categories</h1>
-          <p className="text-body mt-2">Manage product categories.</p>
-        </div>
+      <PageHeader 
+        title="Categories" 
+        description="Manage product categories."
+      >
         <Link to="/categories/new" className="btn btn-primary">
           + Create Category
         </Link>
-      </div>
+      </PageHeader>
 
       <div className="table-container">
         {!data?.data || data.data.length === 0 ? (
