@@ -12,6 +12,14 @@ interface CreateOrderPayload {
 }
 
 export const orderService = {
+  /**
+   * Creates a new order after validating products, inventory, and optional coupons.
+   * Deducts product inventory, creates the customer if needed, and sets up payment
+   * and shipping records within a single database transaction.
+   * 
+   * @param payload - The order details including items, customer information, and shipping address.
+   * @returns The newly created order including items, payment, and shipping details.
+   */
   async createOrder(payload: CreateOrderPayload) {
     const { name, email, contact, items, shippingAddress, couponCode } = payload;
 
@@ -156,6 +164,12 @@ export const orderService = {
     }
   },
 
+  /**
+   * Retrieves a paginated list of orders, optionally filtered by customer ID and order status.
+   * 
+   * @param options - Pagination parameters (page, limit) and optional filters (customerId, status).
+   * @returns An object containing the list of orders and pagination metadata.
+   */
   async getOrders(options: { page?: number; limit?: number; customerId?: string; status?: OrderStatus }) {
     const page = options.page || 1;
     const limit = options.limit || 20;
@@ -186,6 +200,13 @@ export const orderService = {
     };
   },
 
+  /**
+   * Fetches a single order by its ID, including its associated items, payment, and shipping records.
+   * 
+   * @param id - The unique identifier of the order.
+   * @returns The order with its related records.
+   * @throws {AppError} If the order is not found.
+   */
   async getOrderById(id: string) {
     const order = await prisma.order.findUnique({
       where: { id },
@@ -203,6 +224,15 @@ export const orderService = {
     return order;
   },
 
+  /**
+   * Updates the status of an existing order.
+   * Enforces valid status transition rules (e.g., PENDING to CONFIRMED, CONFIRMED to SHIPPED).
+   * 
+   * @param id - The unique identifier of the order to update.
+   * @param newStatus - The new status to apply to the order.
+   * @returns The updated order with its related records.
+   * @throws {AppError} If the order is not found or the status transition is invalid.
+   */
   async updateOrderStatus(id: string, newStatus: OrderStatus) {
     const order = await prisma.order.findUnique({ where: { id } });
     if (!order) {
@@ -229,6 +259,14 @@ export const orderService = {
     });
   },
 
+  /**
+   * Cancels a PENDING or CONFIRMED order and restores the inventory of its items.
+   * Uses an atomic transaction to ensure the order hasn't changed status concurrently.
+   * 
+   * @param id - The unique identifier of the order to cancel.
+   * @returns The cancelled order with its related records.
+   * @throws {AppError} If the order is not found, cannot be cancelled, or changes status concurrently.
+   */
   async cancelOrder(id: string) {
     // 1. Fetch order
     const order = await prisma.order.findUnique({
@@ -248,16 +286,25 @@ export const orderService = {
     // 3. Transaction
     try {
       const cancelledOrder = await prisma.$transaction(async (tx) => {
-        // Double check status in transaction to prevent race conditions during cancellation
-        const currentOrder = await tx.order.findUnique({ where: { id } });
-        if (currentOrder!.status === OrderStatus.CANCELLED) {
-             throw new AppError(400, 'ALREADY_CANCELLED', 'Order is already cancelled');
+        // Atomically update order status ONLY if it is still PENDING or CONFIRMED
+        const updateResult = await tx.order.updateMany({
+          where: {
+            id,
+            status: { in: [OrderStatus.PENDING, OrderStatus.CONFIRMED] }
+          },
+          data: { status: OrderStatus.CANCELLED }
+        });
+
+        if (updateResult.count === 0) {
+          const currentOrder = await tx.order.findUnique({ where: { id } });
+          if (currentOrder?.status === OrderStatus.CANCELLED) {
+            throw new AppError(400, 'ALREADY_CANCELLED', 'Order is already cancelled');
+          }
+          throw new AppError(400, 'ORDER_UNCANCELLABLE', 'Order status changed before cancellation could complete');
         }
 
-        // a. Update order status
-        const updatedOrder = await tx.order.update({
+        const updatedOrder = await tx.order.findUnique({
           where: { id },
-          data: { status: OrderStatus.CANCELLED },
           include: { items: true, payment: true, shipping: true }
         });
 

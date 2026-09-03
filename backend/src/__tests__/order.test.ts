@@ -256,6 +256,38 @@ describe('Order API', () => {
       expect(res.status).toBe(400);
       expect(res.body.error.code).toBe('ORDER_UNCANCELLABLE');
     });
+
+    it('should fail to cancel if status changes to SHIPPED concurrently', async () => {
+      // Import vi inside the file or assume it's imported (it is not imported yet, we must import it or just use vitest)
+      const { vi } = await import('vitest');
+      
+      let initialReadDone = false;
+      const originalFindUnique = prisma.order.findUnique;
+      
+      vi.spyOn(prisma.order, 'findUnique').mockImplementation((async (args: any) => {
+        const result = await originalFindUnique.call(prisma.order, args);
+        if (args?.where?.id === order.id && !initialReadDone) {
+          initialReadDone = true;
+          // Simulate concurrent update before transaction completes
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { status: OrderStatus.SHIPPED }
+          });
+        }
+        return result;
+      }) as any);
+
+      const res = await request(app).post(`/api/v1/orders/${order.id}/cancel`);
+      
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('ORDER_UNCANCELLABLE');
+
+      // Verify inventory was NOT restored
+      const p1 = await prisma.product.findUnique({ where: { id: product1.id } });
+      expect(p1?.quantity).toBe(7); // Started at 10, order took 3, should still be 7
+
+      vi.restoreAllMocks();
+    });
   });
 
   describe('Status transitions', () => {
