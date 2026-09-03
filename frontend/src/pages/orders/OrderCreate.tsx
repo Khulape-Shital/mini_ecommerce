@@ -59,7 +59,8 @@ export const OrderCreate: React.FC = () => {
       alert('Order created successfully!');
       navigate('/');
     } catch (err: any) {
-      alert('Failed to create order: ' + (err.response?.data?.message || err.message));
+      const serverMessage = err.response?.data?.error?.message || err.response?.data?.message;
+      alert('Failed to create order: ' + (serverMessage || err.message));
     }
   };
 
