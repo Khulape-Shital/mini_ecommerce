@@ -124,11 +124,26 @@ export const ProductsList: React.FC = () => {
             <tbody>
               {data?.data.map((product) => (
                 <tr key={product.id}>
-                  <td style={{ fontWeight: '500' }}>{product.name}</td>
+                  <td style={{ fontWeight: '500' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      {product.imageUrl ? (
+                        <img 
+                          src={product.imageUrl} 
+                          alt={product.name}
+                          style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                        />
+                      ) : (
+                        <div style={{ width: '40px', height: '40px', backgroundColor: 'var(--surface-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-tertiary)' }}>
+                          <span style={{ fontSize: '1rem' }}>📦</span>
+                        </div>
+                      )}
+                      <span>{product.name}</span>
+                    </div>
+                  </td>
                   <td style={{ color: 'var(--text-secondary)' }}>
                     {product.description ? (product.description.length > 50 ? `${product.description.substring(0, 50)}...` : product.description) : '-'}
                   </td>
-                  <td style={{ fontWeight: '600' }}>${Number(product.price).toFixed(2)}</td>
+                  <td style={{ fontWeight: '600' }}>₹{Number(product.price).toFixed(2)}</td>
                   <td>
                     <span className="badge" style={{ backgroundColor: product.quantity > 10 ? 'var(--accent-light)' : 'rgba(245, 158, 11, 0.1)', color: product.quantity > 10 ? 'var(--accent-primary)' : 'var(--warning)' }}>
                       {product.quantity} in stock

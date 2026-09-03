@@ -54,8 +54,8 @@ export const Shop: React.FC = () => {
         <p className="text-body mt-2">Browse our latest products.</p>
       </div>
 
-      <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 300px' }}>
+      <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div>
           <label className="form-label">Search Products</label>
           <input
             type="text"
@@ -65,18 +65,27 @@ export const Shop: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div style={{ flex: '1 1 200px' }}>
-          <label className="form-label">Category</label>
-          <select
-            className="form-select"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
+        <div>
+          <label className="form-label" style={{ marginBottom: '0.75rem', display: 'block' }}>Categories</label>
+          <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+            <button
+              className={`btn ${selectedCategory === '' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ borderRadius: 'var(--radius-full)', whiteSpace: 'nowrap' }}
+              onClick={() => setSelectedCategory('')}
+            >
+              All Categories
+            </button>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+              <button
+                key={cat.id}
+                className={`btn ${selectedCategory === cat.id ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ borderRadius: 'var(--radius-full)', whiteSpace: 'nowrap' }}
+                onClick={() => setSelectedCategory(cat.id)}
+              >
+                {cat.name}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
       </div>
 
@@ -91,34 +100,58 @@ export const Shop: React.FC = () => {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
           {products.map((product) => (
-            <div key={product.id} className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div key={product.id} className="card" style={{ padding: 0, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+              {product.imageUrl ? (
+                <div style={{ height: '220px', width: '100%', overflow: 'hidden', backgroundColor: 'var(--bg-tertiary)' }}>
+                  <img 
+                    src={product.imageUrl} 
+                    alt={product.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform var(--transition-bounce)' }}
+                    onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                    onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  />
+                </div>
+              ) : (
+                <div style={{ height: '220px', width: '100%', backgroundColor: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '4rem' }}>📦</span>
+                </div>
+              )}
               <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <h3 className="text-h3" style={{ margin: 0, flex: 1 }}>{product.name}</h3>
+                  <h3 className="text-h3" style={{ margin: 0, flex: 1, fontSize: '1.25rem' }}>{product.name}</h3>
                   <span className="badge" style={{ backgroundColor: 'var(--accent-light)', color: 'var(--accent-primary)', marginLeft: '1rem' }}>
-                    ${Number(product.price).toFixed(2)}
+                    ₹{Number(product.price).toFixed(2)}
                   </span>
                 </div>
                 
                 {product.category && (
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', display: 'block' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', display: 'block', fontWeight: 600 }}>
                     {product.category.name}
                   </span>
                 )}
                 
-                <p className="text-body" style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', flex: 1 }}>
+                <p className="text-body" style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', flex: 1, fontSize: '0.95rem' }}>
                   {product.description || 'No description available.'}
                 </p>
                 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
-                  <span className="text-small" style={{ color: product.quantity > 0 ? 'var(--success)' : 'var(--danger)', fontWeight: '500' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+                  <span className="text-small" style={{ color: product.quantity > 0 ? 'var(--success)' : 'var(--danger)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: product.quantity > 0 ? 'var(--success)' : 'var(--danger)', display: 'inline-block' }}></span>
                     {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
                   </span>
                   
                   <button 
                     className="btn btn-primary" 
                     disabled={product.quantity <= 0} 
-                    style={{ opacity: product.quantity > 0 ? 1 : 0.4, cursor: product.quantity > 0 ? 'pointer' : 'not-allowed' }}
+                    style={{ 
+                      opacity: product.quantity > 0 ? 1 : 0.4, 
+                      cursor: product.quantity > 0 ? 'pointer' : 'not-allowed',
+                      borderRadius: 'var(--radius-full)',
+                      padding: '0.5rem 1.25rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
                     onClick={() => {
                       addToCart({
                         productId: product.id,
@@ -126,8 +159,14 @@ export const Shop: React.FC = () => {
                         price: product.price,
                         availableStock: product.quantity,
                       });
+                      window.alert(`${product.name} has been added to your cart!`);
                     }}
                   >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="9" cy="21" r="1"></circle>
+                      <circle cx="20" cy="21" r="1"></circle>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
                     Add to Cart
                   </button>
                 </div>

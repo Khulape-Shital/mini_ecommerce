@@ -88,6 +88,8 @@ npm test
 - `GET /api/v1/customers` - List all customers
 - `POST /api/v1/customers` - Create a customer
 - `GET /api/v1/customers/:id` - Get customer details
+- `PATCH /api/v1/customers/:id` - Update a customer
+- `DELETE /api/v1/customers/:id` - Delete a customer
 
 ### Orders
 - `GET /api/v1/orders` - List all orders

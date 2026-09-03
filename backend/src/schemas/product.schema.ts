@@ -7,6 +7,7 @@ export const createProductSchema = z.object({
     price: z.number().min(0, 'Price must be greater than or equal to 0'),
     quantity: z.number().int().min(0, 'Quantity cannot be negative').default(0),
     categoryId: z.string().uuid('Invalid category ID').optional().nullable(),
+    imageUrl: z.string().max(2800000, 'Image is too large (max 2MB)').optional().nullable(),
   }),
 });
 
@@ -17,6 +18,7 @@ export const updateProductSchema = z.object({
     price: z.number().min(0, 'Price must be greater than or equal to 0').optional(),
     quantity: z.number().int().min(0, 'Quantity cannot be negative').optional(),
     categoryId: z.string().uuid('Invalid category ID').optional().nullable(),
+    imageUrl: z.string().max(2800000, 'Image is too large (max 2MB)').optional().nullable(),
   }).refine(data => Object.keys(data).length > 0, {
     message: "At least one field must be provided for update"
   }),

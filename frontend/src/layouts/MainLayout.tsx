@@ -22,10 +22,10 @@ export const MainLayout: React.FC = () => {
   return (
     <div className="flex" style={{ minHeight: '100vh' }}>
       {/* Sidebar */}
-      <aside 
-        style={{ 
-          width: '260px', 
-          backgroundColor: 'var(--bg-secondary)', 
+      <aside
+        style={{
+          width: '260px',
+          backgroundColor: 'var(--bg-secondary)',
           borderRight: '1px solid var(--border-color)',
           display: 'flex',
           flexDirection: 'column'
@@ -33,15 +33,15 @@ export const MainLayout: React.FC = () => {
       >
         <div style={{ padding: '2rem 1.5rem', borderBottom: '1px solid var(--border-color)' }}>
           <h2 className="text-h2" style={{ color: 'var(--accent-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '1.5rem' }}>✨</span> Nexus
+            <span style={{ fontSize: '1.5rem' }}>✨</span> Shopora
           </h2>
         </div>
-        
+
         <nav style={{ padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
           {navItems.map((item) => {
             const active = isActive(item.path);
             return (
-              <Link 
+              <Link
                 key={item.path}
                 to={item.path}
                 style={{
@@ -75,7 +75,7 @@ export const MainLayout: React.FC = () => {
             );
           })}
         </nav>
-        
+
         <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
           <div className="flex items-center gap-4">
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
@@ -83,7 +83,7 @@ export const MainLayout: React.FC = () => {
             </div>
             <div>
               <div className="text-body" style={{ fontWeight: '600', color: 'var(--text-primary)' }}>Admin User</div>
-              <div className="text-small">admin@nexus.com</div>
+              <div className="text-small">admin@shopora.com</div>
             </div>
           </div>
         </div>
@@ -91,10 +91,10 @@ export const MainLayout: React.FC = () => {
 
       {/* Main Content */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)' }}>
-        <header 
-          style={{ 
-            height: '73px', 
-            borderBottom: '1px solid var(--border-color)', 
+        <header
+          style={{
+            height: '73px',
+            borderBottom: '1px solid var(--border-color)',
             backgroundColor: 'var(--bg-secondary)',
             display: 'flex',
             alignItems: 'center',

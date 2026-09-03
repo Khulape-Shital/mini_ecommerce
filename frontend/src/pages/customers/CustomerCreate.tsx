@@ -34,60 +34,73 @@ export const CustomerCreate: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <h1>Create Customer</h1>
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Name</label>
-          <input 
-            {...register('name')} 
-            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-          />
-          {errors.name && <span style={{ color: 'red' }}>{errors.name.message}</span>}
-        </div>
-        
-        <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Email</label>
-          <input 
-            type="email"
-            {...register('email')} 
-            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-          />
-          {errors.email && <span style={{ color: 'red' }}>{errors.email.message}</span>}
-        </div>
-        
-        <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Contact (Optional)</label>
-          <input 
-            {...register('contact')} 
-            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-          />
-          {errors.contact && <span style={{ color: 'red' }}>{errors.contact.message}</span>}
-        </div>
+    <div className="animate-fade-in" style={{ maxWidth: '640px', margin: '2rem auto' }}>
+      <div className="page-header" style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+        <h1 className="text-h1" style={{ background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          Create Customer
+        </h1>
+        <p className="text-body mt-2">Add a new customer to your Shopora store.</p>
+      </div>
 
-        {mutation.isError && (
-          <div style={{ color: 'red', padding: '1rem', background: '#ffe6e6', borderRadius: '4px' }}>
-            Failed to create customer. {mutation.error instanceof Error ? mutation.error.message : ''}
+      {mutation.isError && (
+        <div style={{ marginBottom: '2rem', color: 'var(--danger)', padding: '1rem', background: '#fef2f2', borderRadius: 'var(--radius-md)', border: '1px solid var(--danger)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '1.25rem' }}>⚠️</span>
+          <span>Failed to create customer. {mutation.error instanceof Error ? mutation.error.message : ''}</span>
+        </div>
+      )}
+
+      <div className="card glass-panel" style={{ padding: '2.5rem' }}>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex-col">
+          <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+            <label className="form-label">Full Name</label>
+            <input 
+              {...register('name')} 
+              className="form-input"
+              placeholder="e.g. John Doe"
+            />
+            {errors.name && <span className="text-small" style={{ color: 'var(--danger)', marginTop: '0.5rem', display: 'block' }}>{errors.name.message}</span>}
           </div>
-        )}
+          
+          <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+            <label className="form-label">Email Address</label>
+            <input 
+              type="email"
+              {...register('email')} 
+              className="form-input"
+              placeholder="e.g. john@example.com"
+            />
+            {errors.email && <span className="text-small" style={{ color: 'var(--danger)', marginTop: '0.5rem', display: 'block' }}>{errors.email.message}</span>}
+          </div>
+          
+          <div className="form-group" style={{ marginBottom: '2.5rem' }}>
+            <label className="form-label">Contact Number (Optional)</label>
+            <input 
+              {...register('contact')} 
+              className="form-input"
+              placeholder="e.g. +1 234 567 8900"
+            />
+            {errors.contact && <span className="text-small" style={{ color: 'var(--danger)', marginTop: '0.5rem', display: 'block' }}>{errors.contact.message}</span>}
+          </div>
 
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <button 
-            type="submit" 
-            disabled={mutation.isPending}
-            style={{ background: '#28a745', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: mutation.isPending ? 'not-allowed' : 'pointer' }}
-          >
-            {mutation.isPending ? 'Saving...' : 'Save'}
-          </button>
-          <button 
-            type="button" 
-            onClick={() => navigate('/customers')}
-            style={{ background: '#6c757d', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+          <div className="flex gap-4" style={{ paddingTop: '2rem', borderTop: '1px solid var(--border-color)', justifyContent: 'flex-end' }}>
+            <button 
+              type="button" 
+              onClick={() => navigate('/customers')}
+              className="btn btn-secondary"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              disabled={mutation.isPending}
+              className="btn btn-primary"
+              style={{ cursor: mutation.isPending ? 'not-allowed' : 'pointer', opacity: mutation.isPending ? 0.8 : 1, minWidth: '140px' }}
+            >
+              {mutation.isPending ? 'Saving...' : 'Save Customer'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

@@ -44,7 +44,7 @@ export const Cart: React.FC = () => {
                       Stock: {item.availableStock}
                     </div>
                   </td>
-                  <td>${Number(item.price).toFixed(2)}</td>
+                  <td>₹{Number(item.price).toFixed(2)}</td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <button 
@@ -67,7 +67,7 @@ export const Cart: React.FC = () => {
                     </div>
                   </td>
                   <td style={{ fontWeight: '600' }}>
-                    ${(Number(item.price) * item.quantity).toFixed(2)}
+                    ₹{(Number(item.price) * item.quantity).toFixed(2)}
                   </td>
                   <td>
                     <button 
@@ -85,7 +85,7 @@ export const Cart: React.FC = () => {
 
           <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className="text-h3">
-              Total: <span style={{ color: 'var(--accent-primary)' }}>${totalAmount.toFixed(2)}</span>
+              Total: <span style={{ color: 'var(--accent-primary)' }}>₹{totalAmount.toFixed(2)}</span>
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
               <Link to="/shop" className="btn btn-secondary">Continue Shopping</Link>

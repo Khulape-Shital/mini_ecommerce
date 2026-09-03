@@ -154,7 +154,7 @@ export const OrderCreate: React.FC = () => {
               >
                 <option value="" disabled>-- Select a product to add --</option>
                 {products.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} - ${p.price}</option>
+                  <option key={p.id} value={p.id}>{p.name} - ₹{p.price}</option>
                 ))}
               </select>
             </div>
@@ -174,7 +174,7 @@ export const OrderCreate: React.FC = () => {
                   {items.map(item => (
                       <tr key={item.productId}>
                         <td>{item.name}</td>
-                        <td>${Number(item.price).toFixed(2)}</td>
+                        <td>₹{Number(item.price).toFixed(2)}</td>
                         <td>
                           <input 
                             type="number"
@@ -187,7 +187,7 @@ export const OrderCreate: React.FC = () => {
                           />
                         </td>
                         <td style={{ fontWeight: '600' }}>
-                          ${(Number(item.price) * item.quantity).toFixed(2)}
+                          ₹{(Number(item.price) * item.quantity).toFixed(2)}
                         </td>
                         <td>
                           <button 
@@ -207,7 +207,7 @@ export const OrderCreate: React.FC = () => {
 
           <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className="text-h3">
-              Order Total: <span style={{ color: 'var(--accent-primary)' }}>${totalAmount.toFixed(2)}</span>
+              Order Total: <span style={{ color: 'var(--accent-primary)' }}>₹{totalAmount.toFixed(2)}</span>
             </div>
             <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 2rem', fontSize: '1.1rem' }}>
               Place Order

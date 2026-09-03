@@ -8,6 +8,7 @@ interface CreateProductInput {
   price: number;
   quantity: number;
   categoryId?: string | null;
+  imageUrl?: string | null;
 }
 
 interface UpdateProductInput {
@@ -16,6 +17,7 @@ interface UpdateProductInput {
   price?: number;
   quantity?: number;
   categoryId?: string | null;
+  imageUrl?: string | null;
 }
 
 interface ListProductsQuery {
@@ -47,6 +49,7 @@ export const createProduct = async (data: CreateProductInput) => {
     description: data.description !== undefined ? data.description : null,
     price: data.price,
     quantity: data.quantity,
+    imageUrl: data.imageUrl !== undefined ? data.imageUrl : null,
   };
   if (data.categoryId !== undefined) {
     payload.categoryId = data.categoryId;
@@ -78,6 +81,7 @@ export const updateProduct = async (id: string, data: UpdateProductInput) => {
   if (data.price !== undefined) payload.price = data.price;
   if (data.quantity !== undefined) payload.quantity = data.quantity;
   if (data.categoryId !== undefined) payload.categoryId = data.categoryId;
+  if (data.imageUrl !== undefined) payload.imageUrl = data.imageUrl;
 
   try {
     return await prisma.product.update({

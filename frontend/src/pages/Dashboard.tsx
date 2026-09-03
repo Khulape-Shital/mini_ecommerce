@@ -53,7 +53,7 @@ export const Dashboard: React.FC = () => {
       <div className="page-header">
         <div>
           <h1 className="text-h1">Dashboard</h1>
-          <p className="text-body mt-2">Welcome back to your Nexus store overview.</p>
+          <p className="text-body mt-2">Welcome back to your Shopora store overview.</p>
         </div>
         <div className="flex gap-4">
           <Link to="/products/new" className="btn btn-primary">
@@ -73,7 +73,7 @@ export const Dashboard: React.FC = () => {
             <span style={{ fontSize: '1.5rem' }}>💰</span>
           </div>
           <div className="text-h2" style={{ color: 'var(--text-primary)' }}>
-            {isLoadingRevenue ? '...' : `$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            {isLoadingRevenue ? '...' : `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           </div>
           <div className="text-small" style={{ color: 'var(--success)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <span>↑</span> 20.1% from last month

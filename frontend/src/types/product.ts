@@ -14,6 +14,7 @@ export interface Product {
   quantity: number;
   categoryId?: string | null;
   category?: Category | null;
+  imageUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -51,6 +52,7 @@ export interface CreateProductInput {
   price: number;
   quantity: number;
   categoryId?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface UpdateProductInput {
@@ -59,4 +61,5 @@ export interface UpdateProductInput {
   price?: number;
   quantity?: number;
   categoryId?: string | null;
+  imageUrl?: string | null;
 }

@@ -112,8 +112,8 @@ export const OrderDetail: React.FC = () => {
                   <tr key={item.id}>
                     <td>{item.productId.substring(0, 8)}...</td>
                     <td>{item.quantity}</td>
-                    <td>${item.unitPrice}</td>
-                    <td>${(Number(item.quantity) * Number(item.unitPrice)).toFixed(2)}</td>
+                    <td>₹{item.unitPrice}</td>
+                    <td>₹{(Number(item.quantity) * Number(item.unitPrice)).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -124,11 +124,11 @@ export const OrderDetail: React.FC = () => {
         </div>
 
         <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--border)', textAlign: 'right' }}>
-          <p><strong>Subtotal:</strong> ${(Number(order.total) + Number(order.discountAmount || 0)).toFixed(2)}</p>
-          {Number(order.discountAmount) > 0 && (
-            <p className="text-body-secondary"><strong>Discount:</strong> -${order.discountAmount}</p>
+          <p><strong>Subtotal:</strong> ₹{(Number(order.total) + Number(order.discountAmount || 0)).toFixed(2)}</p>
+          {order.discountAmount && Number(order.discountAmount) > 0 && (
+            <p className="text-body-secondary"><strong>Discount:</strong> -₹{order.discountAmount}</p>
           )}
-          <p className="text-h3" style={{ marginTop: '0.5rem' }}><strong>Total:</strong> ${order.total}</p>
+          <p className="text-h3" style={{ marginTop: '0.5rem' }}><strong>Total:</strong> ₹{order.total}</p>
         </div>
       </div>
     </div>

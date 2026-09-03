@@ -65,7 +65,7 @@ export const OrdersList: React.FC = () => {
                     </Link>
                   </td>
                   <td style={{ fontSize: '0.875rem' }}>{order.customerId.slice(0, 8)}...</td>
-                  <td style={{ fontWeight: '600' }}>${Number(order.total).toFixed(2)}</td>
+                  <td style={{ fontWeight: '600' }}>₹{Number(order.total).toFixed(2)}</td>
                   <td>
                     <span 
                       className="badge" 
