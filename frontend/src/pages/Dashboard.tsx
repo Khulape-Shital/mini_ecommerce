@@ -111,9 +111,9 @@ export const Dashboard: React.FC = () => {
             <h3 className="text-small" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>Conversion Rate</h3>
             <span style={{ fontSize: '1.5rem' }}>📈</span>
           </div>
-          <div className="text-h2" style={{ color: 'var(--text-primary)' }}>3.42%</div>
-          <div className="text-small" style={{ color: 'var(--success)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <span>↑</span> 1.2% from last month
+          <div className="text-h2" style={{ color: 'var(--text-primary)' }}>N/A</div>
+          <div className="text-small" style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <span>Visitor analytics not tracked</span>
           </div>
         </div>
       </div>
