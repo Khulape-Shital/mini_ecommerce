@@ -60,7 +60,9 @@ export const OrdersList: React.FC = () => {
               {data.data.map((order) => (
                 <tr key={order.id}>
                   <td style={{ fontWeight: '500', fontSize: '0.875rem' }}>
-                    {order.id.slice(0, 8)}...
+                    <Link to={`/orders/${order.id}`} style={{ color: 'var(--accent-primary)', textDecoration: 'none' }} className="hover:underline">
+                      {order.id.slice(0, 8)}...
+                    </Link>
                   </td>
                   <td style={{ fontSize: '0.875rem' }}>{order.customerId.slice(0, 8)}...</td>
                   <td style={{ fontWeight: '600' }}>${Number(order.total).toFixed(2)}</td>
