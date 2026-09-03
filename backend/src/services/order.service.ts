@@ -131,7 +131,7 @@ export const orderService = {
         };
 
         if (couponId) {
-          orderData.couponId = couponId;
+          orderData.coupon = { connect: { id: couponId } };
         }
 
         // b. Create Order & related records
