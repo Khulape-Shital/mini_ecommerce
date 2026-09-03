@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { productApi } from '../../api/product';
 import { categoryApi } from '../../api/category';
+import { useCart } from '../../store/CartContext';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
 
@@ -17,6 +18,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 export const Shop: React.FC = () => {
+  const { addToCart } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   
@@ -115,9 +117,16 @@ export const Shop: React.FC = () => {
                   
                   <button 
                     className="btn btn-primary" 
-                    disabled={true} 
-                    style={{ opacity: product.quantity > 0 ? 0.7 : 0.4, cursor: 'not-allowed' }}
-                    title="Cart functionality coming soon"
+                    disabled={product.quantity <= 0} 
+                    style={{ opacity: product.quantity > 0 ? 1 : 0.4, cursor: product.quantity > 0 ? 'pointer' : 'not-allowed' }}
+                    onClick={() => {
+                      addToCart({
+                        productId: product.id,
+                        name: product.name,
+                        price: product.price,
+                        availableStock: product.quantity,
+                      });
+                    }}
                   >
                     Add to Cart
                   </button>

@@ -12,10 +12,11 @@ export const MainLayout: React.FC = () => {
   const navItems = [
     { path: '/', label: 'Dashboard', icon: '📊' },
     { path: '/shop', label: 'Shop', icon: '🛍️' },
+    { path: '/cart', label: 'Cart', icon: '🛒' },
     { path: '/products', label: 'Products', icon: '📦' },
     { path: '/categories', label: 'Categories', icon: '🏷️' },
     { path: '/customers', label: 'Customers', icon: '👥' },
-    { path: '/orders', label: 'Orders', icon: '🛒' },
+    { path: '/orders', label: 'Orders', icon: '🧾' },
   ];
 
   return (

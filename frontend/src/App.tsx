@@ -15,17 +15,21 @@ import { OrdersList } from './pages/orders/OrdersList';
 import { OrderCreate } from './pages/orders/OrderCreate';
 import { OrderDetail } from './pages/orders/OrderDetail';
 import { Shop } from './pages/shop/Shop';
+import { Cart } from './pages/cart/Cart';
+import { CartProvider } from './store/CartContext';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="shop" element={<Shop />} />
+            <Route path="cart" element={<Cart />} />
             
             <Route path="products" element={<ProductsList />} />
             <Route path="products/new" element={<ProductCreate />} />
@@ -43,7 +47,8 @@ function App() {
             <Route path="orders/:id" element={<OrderDetail />} />
           </Route>
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </CartProvider>
     </QueryClientProvider>
   );
 }
