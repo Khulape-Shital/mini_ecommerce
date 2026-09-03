@@ -23,6 +23,25 @@ export interface Order {
   discountAmount?: string | null;
   createdAt: string;
   updatedAt: string;
+  items?: OrderItem[];
+  payment?: {
+    id: string;
+    status: string;
+    amount: string;
+  };
+  shipping?: {
+    id: string;
+    status: string;
+    address: string;
+  };
+}
+
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  productId: string;
+  quantity: number;
+  unitPrice: string;
 }
 
 export interface OrderListResponse {
@@ -45,4 +64,12 @@ export const orderApi = {
     const response = await apiClient.get<OrderListResponse>('/orders', { params });
     return response.data;
   },
+  getOrderById: async (id: string): Promise<{ success: boolean; data: Order }> => {
+    const response = await apiClient.get<{ success: boolean; data: Order }>(`/orders/${id}`);
+    return response.data;
+  },
+  updateOrderStatus: async (id: string, status: string): Promise<{ success: boolean; data: Order }> => {
+    const response = await apiClient.patch<{ success: boolean; data: Order }>(`/orders/${id}/status`, { status });
+    return response.data;
+  }
 };
