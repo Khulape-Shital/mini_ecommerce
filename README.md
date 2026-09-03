@@ -81,7 +81,7 @@ npm test
 - `GET /api/v1/products` - List all products
 - `POST /api/v1/products` - Create a product
 - `GET /api/v1/products/:id` - Get product details
-- `PUT /api/v1/products/:id` - Update a product
+- `PATCH /api/v1/products/:id` - Update a product
 - `DELETE /api/v1/products/:id` - Delete a product
 
 ### Customers
@@ -113,11 +113,14 @@ POST /api/v1/products
 ```json
 POST /api/v1/orders
 {
-  "customerId": "uuid-here",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "contact": "+1234567890",
   "items": [
     { "productId": "uuid-here", "quantity": 2 }
   ],
-  "shippingAddress": "123 Main St"
+  "shippingAddress": "123 Main St",
+  "couponCode": "SAVE20"
 }
 ```
 
