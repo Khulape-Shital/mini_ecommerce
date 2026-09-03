@@ -11,6 +11,7 @@ export const MainLayout: React.FC = () => {
 
   const navItems = [
     { path: '/', label: 'Dashboard', icon: '📊' },
+    { path: '/shop', label: 'Shop', icon: '🛍️' },
     { path: '/products', label: 'Products', icon: '📦' },
     { path: '/categories', label: 'Categories', icon: '🏷️' },
     { path: '/customers', label: 'Customers', icon: '👥' },

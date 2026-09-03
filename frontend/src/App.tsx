@@ -14,6 +14,7 @@ import { CustomerDetail } from './pages/customers/CustomerDetail';
 import { OrdersList } from './pages/orders/OrdersList';
 import { OrderCreate } from './pages/orders/OrderCreate';
 import { OrderDetail } from './pages/orders/OrderDetail';
+import { Shop } from './pages/shop/Shop';
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="shop" element={<Shop />} />
             
             <Route path="products" element={<ProductsList />} />
             <Route path="products/new" element={<ProductCreate />} />
