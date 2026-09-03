@@ -26,6 +26,11 @@ export const Dashboard: React.FC = () => {
     queryFn: () => customerApi.getCustomers({ limit: 1 })
   });
 
+  const { data: recentOrdersData, isLoading: isLoadingRecentOrders } = useQuery({
+    queryKey: ['dashboard_recent_orders'],
+    queryFn: () => orderApi.getOrders({ limit: 5 })
+  });
+
   const isLoadingOrders = isLoadingPending || isLoadingConfirmed || isLoadingShipped;
   const activeOrdersCount = (pendingOrders?.meta?.total || 0) + 
                             (confirmedOrders?.meta?.total || 0) + 
@@ -103,22 +108,24 @@ export const Dashboard: React.FC = () => {
       <div className="card" style={{ marginTop: '2rem' }}>
         <h2 className="text-h3 mb-4">Recent Activity</h2>
         <div className="flex-col gap-4" style={{ marginTop: '1.5rem' }}>
-          {[
-            { action: 'New order #1234', time: '5 minutes ago', status: 'Processing' },
-            { action: 'Product "Wireless Headphones" restocked', time: '2 hours ago', status: 'Inventory' },
-            { action: 'Customer John Doe registered', time: '5 hours ago', status: 'User' },
-          ].map((item, i) => (
-            <div key={i} className="flex justify-between items-center" style={{ padding: '1rem 0', borderBottom: i === 2 ? 'none' : '1px solid var(--border-color)' }}>
-              <div className="flex items-center gap-4">
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--accent-primary)' }}></div>
-                <div>
-                  <p style={{ fontWeight: '500' }}>{item.action}</p>
-                  <p className="text-small">{item.time}</p>
+          {isLoadingRecentOrders ? (
+            <p className="text-body text-gray-500">Loading recent activity...</p>
+          ) : recentOrdersData?.data && recentOrdersData.data.length > 0 ? (
+            recentOrdersData.data.map((order, i) => (
+              <div key={order.id} className="flex justify-between items-center" style={{ padding: '1rem 0', borderBottom: i === recentOrdersData.data.length - 1 ? 'none' : '1px solid var(--border-color)' }}>
+                <div className="flex items-center gap-4">
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--accent-primary)' }}></div>
+                  <div>
+                    <p style={{ fontWeight: '500' }}>New order #{order.id.substring(0, 8)}</p>
+                    <p className="text-small">{new Date(order.createdAt).toLocaleString()}</p>
+                  </div>
                 </div>
+                <span className="badge">{order.status}</span>
               </div>
-              <span className="badge">{item.status}</span>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-body text-gray-500">No recent activity found.</p>
+          )}
         </div>
       </div>
     </div>
