@@ -17,7 +17,7 @@ export const OrderCreate: React.FC = () => {
     shippingAddress: '',
   });
 
-  const { items, addToCart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { items, addToCart, updateQuantity, removeFromCart, clearCart, totalAmount } = useCart();
 
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; text: string } | null>(null);
 
@@ -164,16 +164,17 @@ export const OrderCreate: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Product</th>
+                    <th>Price</th>
                     <th>Quantity</th>
+                    <th>Total</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map(item => {
-                    const product = products.find(p => p.id === item.productId);
-                    return (
+                  {items.map(item => (
                       <tr key={item.productId}>
-                        <td>{product?.name || item.productId}</td>
+                        <td>{item.name}</td>
+                        <td>${Number(item.price).toFixed(2)}</td>
                         <td>
                           <input 
                             type="number"
@@ -185,6 +186,9 @@ export const OrderCreate: React.FC = () => {
                             onChange={(e) => handleUpdateQuantity(item.productId, parseInt(e.target.value) || 1)}
                           />
                         </td>
+                        <td style={{ fontWeight: '600' }}>
+                          ${(Number(item.price) * item.quantity).toFixed(2)}
+                        </td>
                         <td>
                           <button 
                             type="button" 
@@ -195,14 +199,16 @@ export const OrderCreate: React.FC = () => {
                           </button>
                         </td>
                       </tr>
-                    );
-                  })}
+                    ))}
                 </tbody>
               </table>
             )}
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="text-h3">
+              Order Total: <span style={{ color: 'var(--accent-primary)' }}>${totalAmount.toFixed(2)}</span>
+            </div>
             <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 2rem', fontSize: '1.1rem' }}>
               Place Order
             </button>
