@@ -72,34 +72,16 @@ export const Dropdown = React.forwardRef<HTMLSelectElement, DropdownProps>(({
 
     // Update the hidden native select manually to trigger RHF
     if (selectRef.current) {
-      selectRef.current.value = optionValue.toString();
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value")?.set;
+      if (nativeInputValueSetter) {
+        nativeInputValueSetter.call(selectRef.current, optionValue.toString());
+      } else {
+        selectRef.current.value = optionValue.toString();
+      }
       
       // Dispatch change event for react-hook-form
       const event = new Event('change', { bubbles: true });
       selectRef.current.dispatchEvent(event);
-      
-      // Also call the onChange prop if it exists
-      if (onChange) {
-        // We create a mock synthetic event
-        const syntheticEvent = {
-          target: selectRef.current,
-          currentTarget: selectRef.current,
-          bubbles: true,
-          cancelable: true,
-          defaultPrevented: false,
-          eventPhase: 3,
-          isTrusted: true,
-          nativeEvent: event,
-          preventDefault: () => {},
-          isDefaultPrevented: () => false,
-          stopPropagation: () => {},
-          isPropagationStopped: () => false,
-          persist: () => {},
-          timeStamp: Date.now(),
-          type: 'change'
-        } as unknown as React.ChangeEvent<HTMLSelectElement>;
-        onChange(syntheticEvent);
-      }
     }
   };
 
