@@ -48,6 +48,8 @@ The database uses a relational model via Prisma/PostgreSQL.
 *(Additional tables exist for Categories, Reviews, Payments, Shipping, and Coupons)*
 
 ## Setup and Installation
+
+### Backend Setup
 1. Clone the repository.
 2. Navigate to the `backend` directory: `cd backend`
 3. Install dependencies: `npm install`
@@ -65,12 +67,21 @@ NODE_ENV="development"
 2. Generate Prisma client (if not automatically done): `npx prisma generate`
 
 ## How to Run the Application
+
+### Backend
 - **Development**: `npm run dev`
 - **Build**: `npm run build`
 - **Production**: `npm start`
 
+### Frontend Setup & Run
+1. Navigate to the `frontend` directory: `cd frontend`
+2. Install dependencies: `npm install`
+3. Run the application:
+   - **Development**: `npm run dev`
+   - **Build**: `npm run build`
+
 ## How to Run Tests
-The project uses Vitest for testing. Run the test suite using:
+The project uses Vitest for backend testing. Navigate to the `backend` directory and run the test suite using:
 ```bash
 npm test
 ```
@@ -129,7 +140,7 @@ POST /api/v1/orders
 ## Assumptions & Design Decisions
 - **Inventory Locking**: Inventory is eagerly deducted during order creation using database transactions to prevent overselling.
 - **Price Freezing**: The unit price of a product is copied to the `OrderItem` at checkout so that future product price changes do not alter past orders.
-- **Soft Deletion**: While full deletion is supported for some entities, transactional safety ensures data integrity.
+- **Hard Deletion with Dependency Checks**: Entities like customers and products cannot be deleted if they are referenced by existing orders, ensuring data integrity.
 
 ## Limitations & Future Improvements
 - Implement pagination comprehensively across all list endpoints.

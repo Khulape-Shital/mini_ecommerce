@@ -39,8 +39,8 @@ export const ProductCreate: React.FC = () => {
     defaultValues: {
       name: '',
       description: '',
-      price: 0,
-      quantity: 0,
+      price: '' as unknown as number,
+      quantity: '' as unknown as number,
       categoryId: '',
       imageUrl: null,
     },
