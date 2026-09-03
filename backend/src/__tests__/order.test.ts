@@ -5,7 +5,7 @@ import { prisma } from '../../src/db/prisma.js';
 import { OrderStatus, Prisma } from '../../src/db/prisma.js';
 
 describe('Order API', () => {
-  let customer: { id: string; email: string };
+  let customer: { id: string; name: string; email: string };
   let product1: { id: string; name: string; price: Prisma.Decimal; quantity: number };
   let product2: { id: string; name: string; price: Prisma.Decimal; quantity: number };
   let coupon: { id: string; code: string };
@@ -41,7 +41,8 @@ describe('Order API', () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: customer.id,
+          name: customer.name,
+          email: customer.email,
           items: [{ productId: product1.id, quantity: 2 }],
           shippingAddress: '123 Main St'
         });
@@ -59,7 +60,8 @@ describe('Order API', () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: customer.id,
+          name: customer.name,
+          email: customer.email,
           items: [
             { productId: product1.id, quantity: 1 },
             { productId: product2.id, quantity: 2 }
@@ -86,7 +88,8 @@ describe('Order API', () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: customer.id,
+          name: customer.name,
+          email: customer.email,
           items: [{ productId: product1.id, quantity: 2 }],
           couponCode: 'SAVE20',
           shippingAddress: '123 Main St'
@@ -97,24 +100,30 @@ describe('Order API', () => {
       expect(res.body.data.discountAmount).toBe('40');
     });
 
-    it('should fail if customer does not exist', async () => {
+    it('should create an order with a new customer', async () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: '00000000-0000-0000-0000-000000000000',
+          name: 'New Customer',
+          email: 'new@example.com',
           items: [{ productId: product1.id, quantity: 1 }],
           shippingAddress: '123 Main St'
         });
 
-      expect(res.status).toBe(404);
-      expect(res.body.error.code).toBe('CUSTOMER_NOT_FOUND');
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+
+      const newCustomer = await prisma.customer.findUnique({ where: { email: 'new@example.com' } });
+      expect(newCustomer).toBeDefined();
+      expect(newCustomer?.name).toBe('New Customer');
     });
 
     it('should fail if a product does not exist', async () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: customer.id,
+          name: customer.name,
+          email: customer.email,
           items: [{ productId: '00000000-0000-0000-0000-000000000000', quantity: 1 }],
           shippingAddress: '123 Main St'
         });
@@ -127,7 +136,8 @@ describe('Order API', () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: customer.id,
+          name: customer.name,
+          email: customer.email,
           items: [],
           shippingAddress: '123 Main St'
         });
@@ -139,7 +149,8 @@ describe('Order API', () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: customer.id,
+          name: customer.name,
+          email: customer.email,
           items: [{ productId: product1.id, quantity: 0 }],
           shippingAddress: '123 Main St'
         });
@@ -151,7 +162,8 @@ describe('Order API', () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: customer.id,
+          name: customer.name,
+          email: customer.email,
           items: [
             { productId: product1.id, quantity: 2 },
             { productId: product1.id, quantity: 3 }
@@ -167,7 +179,8 @@ describe('Order API', () => {
       const res = await request(app)
         .post('/api/v1/orders')
         .send({
-          customerId: customer.id,
+          name: customer.name,
+          email: customer.email,
           items: [{ productId: product1.id, quantity: 11 }], // Only 10 available
           shippingAddress: '123 Main St'
         });
@@ -183,7 +196,8 @@ describe('Order API', () => {
       // product2 has quantity 5
       // Send 5 concurrent requests of quantity 2. Only 2 should succeed, 3 should fail.
       const payload = {
-        customerId: customer.id,
+        name: customer.name,
+        email: customer.email,
         items: [{ productId: product2.id, quantity: 2 }],
         shippingAddress: '123 Main St'
       };
@@ -210,7 +224,8 @@ describe('Order API', () => {
 
     beforeEach(async () => {
       const res = await request(app).post('/api/v1/orders').send({
-        customerId: customer.id,
+        name: customer.name,
+        email: customer.email,
         items: [{ productId: product1.id, quantity: 3 }],
         shippingAddress: '123 Main St'
       });
@@ -247,7 +262,8 @@ describe('Order API', () => {
 
     beforeEach(async () => {
       const res = await request(app).post('/api/v1/orders').send({
-        customerId: customer.id,
+        name: customer.name,
+        email: customer.email,
         items: [{ productId: product1.id, quantity: 1 }],
         shippingAddress: '123 Main St'
       });
