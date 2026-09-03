@@ -6,7 +6,13 @@ import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
 import { MessageAlert } from '../../components/MessageAlert';
 
-const STATUS_OPTIONS = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+const VALID_TRANSITIONS: Record<string, string[]> = {
+  PENDING: ['CONFIRMED', 'CANCELLED'],
+  CONFIRMED: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: ['DELIVERED'],
+  DELIVERED: [],
+  CANCELLED: []
+};
 
 export const OrderDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,9 +72,9 @@ export const OrderDetail: React.FC = () => {
                 className="form-select"
                 value={order.status}
                 onChange={(e) => updateStatusMutation.mutate(e.target.value)}
-                disabled={updateStatusMutation.isPending}
+                disabled={updateStatusMutation.isPending || VALID_TRANSITIONS[order.status]?.length === 0}
               >
-                {STATUS_OPTIONS.map(status => (
+                {[order.status, ...(VALID_TRANSITIONS[order.status] || [])].map(status => (
                   <option key={status} value={status}>{status}</option>
                 ))}
               </select>
