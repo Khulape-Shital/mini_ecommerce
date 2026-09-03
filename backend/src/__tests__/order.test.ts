@@ -95,6 +95,7 @@ describe('Order API', () => {
           shippingAddress: '123 Main St'
         });
 
+      console.log('COUPON RESPONSE:', JSON.stringify(res.body, null, 2));
       expect(res.status).toBe(201);
       expect(res.body.data.total).toBe('160'); // 200 - 20%
       expect(res.body.data.discountAmount).toBe('40');
