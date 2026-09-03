@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { customerApi } from '../../api/customer';
 import type { CreateCustomerInput } from '../../types/customer';
+import { Button } from '../../components/ui/Button';
+import { InputField } from '../../components/ui/InputField';
 
 const createCustomerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters long'),
@@ -51,53 +53,44 @@ export const CustomerCreate: React.FC = () => {
 
       <div className="card glass-panel" style={{ padding: '2.5rem' }}>
         <form onSubmit={handleSubmit(onSubmit)} className="flex-col">
-          <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-            <label className="form-label">Full Name</label>
-            <input 
-              {...register('name')} 
-              className="form-input"
-              placeholder="e.g. John Doe"
-            />
-            {errors.name && <span className="text-small" style={{ color: 'var(--danger)', marginTop: '0.5rem', display: 'block' }}>{errors.name.message}</span>}
-          </div>
+          <InputField
+            label="Full Name"
+            placeholder="e.g. John Doe"
+            error={errors.name?.message}
+            {...register('name')}
+          />
           
-          <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-            <label className="form-label">Email Address</label>
-            <input 
-              type="email"
-              {...register('email')} 
-              className="form-input"
-              placeholder="e.g. john@example.com"
-            />
-            {errors.email && <span className="text-small" style={{ color: 'var(--danger)', marginTop: '0.5rem', display: 'block' }}>{errors.email.message}</span>}
-          </div>
+          <InputField
+            type="email"
+            label="Email Address"
+            placeholder="e.g. john@example.com"
+            error={errors.email?.message}
+            {...register('email')}
+          />
           
-          <div className="form-group" style={{ marginBottom: '2.5rem' }}>
-            <label className="form-label">Contact Number (Optional)</label>
-            <input 
-              {...register('contact')} 
-              className="form-input"
-              placeholder="e.g. +1 234 567 8900"
-            />
-            {errors.contact && <span className="text-small" style={{ color: 'var(--danger)', marginTop: '0.5rem', display: 'block' }}>{errors.contact.message}</span>}
-          </div>
+          <InputField
+            label="Contact Number (Optional)"
+            placeholder="e.g. +1 234 567 8900"
+            error={errors.contact?.message}
+            {...register('contact')}
+          />
 
           <div className="flex gap-4" style={{ paddingTop: '2rem', borderTop: '1px solid var(--border-color)', justifyContent: 'flex-end' }}>
-            <button 
+            <Button 
               type="button" 
               onClick={() => navigate('/customers')}
-              className="btn btn-secondary"
+              variant="secondary"
             >
               Cancel
-            </button>
-            <button 
+            </Button>
+            <Button 
               type="submit" 
               disabled={mutation.isPending}
-              className="btn btn-primary"
-              style={{ cursor: mutation.isPending ? 'not-allowed' : 'pointer', opacity: mutation.isPending ? 0.8 : 1, minWidth: '140px' }}
+              variant="primary"
+              style={{ minWidth: '140px' }}
             >
               {mutation.isPending ? 'Saving...' : 'Save Customer'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

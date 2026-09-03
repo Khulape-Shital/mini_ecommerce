@@ -7,6 +7,9 @@ import { ErrorDisplay } from '../../components/ErrorDisplay';
 import { MessageAlert } from '../../components/MessageAlert';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../store/CartContext';
+import { Button } from '../../components/ui/Button';
+import { InputField } from '../../components/ui/InputField';
+import { Dropdown } from '../../components/ui/Dropdown';
 
 export const OrderCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -96,37 +99,28 @@ export const OrderCreate: React.FC = () => {
           <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
             <h2 className="text-h3">Customer Information</h2>
             
-            <div>
-              <label className="form-label">Name *</label>
-              <input
-                type="text"
-                required
-                className="form-input"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-            </div>
+            <InputField
+              label="Name"
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
             
-            <div>
-              <label className="form-label">Email *</label>
-              <input
-                type="email"
-                required
-                className="form-input"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
+            <InputField
+              label="Email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
 
-            <div>
-              <label className="form-label">Contact (Optional)</label>
-              <input
-                type="text"
-                className="form-input"
-                value={formData.contact}
-                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-              />
-            </div>
+            <InputField
+              label="Contact (Optional)"
+              type="text"
+              value={formData.contact}
+              onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+            />
 
             <div>
               <label className="form-label">Shipping Address *</label>
@@ -143,20 +137,19 @@ export const OrderCreate: React.FC = () => {
             <h2 className="text-h3" style={{ marginBottom: '1rem' }}>Order Items</h2>
             
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-              <select 
-                className="form-select" 
+              <Dropdown
                 style={{ flex: 1 }}
                 onChange={(e) => {
                   handleAddProduct(e.target.value);
                   e.target.value = '';
                 }}
                 defaultValue=""
-              >
-                <option value="" disabled>-- Select a product to add --</option>
-                {products.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} - ₹{p.price}</option>
-                ))}
-              </select>
+                placeholder="-- Select a product to add --"
+                options={products.map(p => ({
+                  value: p.id,
+                  label: `${p.name} - ₹${p.price}`
+                }))}
+              />
             </div>
 
             {items.length > 0 && (
@@ -176,11 +169,10 @@ export const OrderCreate: React.FC = () => {
                         <td>{item.name}</td>
                         <td>₹{Number(item.price).toFixed(2)}</td>
                         <td>
-                          <input 
+                          <InputField 
                             type="number"
                             min="1"
                             max={item.availableStock}
-                            className="form-input"
                             style={{ width: '80px' }}
                             value={item.quantity}
                             onChange={(e) => handleUpdateQuantity(item.productId, parseInt(e.target.value) || 1)}
@@ -190,13 +182,13 @@ export const OrderCreate: React.FC = () => {
                           ₹{(Number(item.price) * item.quantity).toFixed(2)}
                         </td>
                         <td>
-                          <button 
+                          <Button 
                             type="button" 
-                            className="btn btn-secondary"
+                            variant="secondary"
                             onClick={() => handleUpdateQuantity(item.productId, 0)}
                           >
                             Remove
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -209,9 +201,9 @@ export const OrderCreate: React.FC = () => {
             <div className="text-h3">
               Order Total: <span style={{ color: 'var(--accent-primary)' }}>₹{totalAmount.toFixed(2)}</span>
             </div>
-            <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 2rem', fontSize: '1.1rem' }}>
+            <Button type="submit" variant="primary" style={{ padding: '0.75rem 2rem', fontSize: '1.1rem' }}>
               Place Order
-            </button>
+            </Button>
           </div>
         </form>
       </div>

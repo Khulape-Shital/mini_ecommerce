@@ -9,6 +9,9 @@ import { categoryApi } from '../../api/category';
 import type { CreateProductInput } from '../../types/product';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
 import { useQuery } from '@tanstack/react-query';
+import { Button } from '../../components/ui/Button';
+import { InputField } from '../../components/ui/InputField';
+import { Dropdown } from '../../components/ui/Dropdown';
 
 const createProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(200),
@@ -122,16 +125,13 @@ export const ProductCreate: React.FC = () => {
 
       <div className="card">
         <form onSubmit={handleSubmit(onSubmit)} className="flex-col">
-          <div className="form-group">
-            <label className="form-label">Name</label>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="e.g. Wireless Headphones"
-              {...register('name')}
-            />
-            {errors.name && <p className="text-small" style={{ color: 'var(--danger)', marginTop: '0.25rem' }}>{errors.name.message}</p>}
-          </div>
+          <InputField
+            label="Name"
+            type="text"
+            placeholder="e.g. Wireless Headphones"
+            error={errors.name?.message}
+            {...register('name')}
+          />
 
           <div className="form-group">
             <label className="form-label">Description</label>
@@ -161,30 +161,30 @@ export const ProductCreate: React.FC = () => {
               {errors.price && <p className="text-small" style={{ color: 'var(--danger)', marginTop: '0.25rem' }}>{errors.price.message}</p>}
             </div>
 
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Quantity</label>
-              <input
+            <div style={{ marginBottom: 0 }}>
+              <InputField
+                label="Quantity"
                 type="number"
-                className="form-input"
                 placeholder="0"
+                error={errors.quantity?.message}
                 {...register('quantity', { valueAsNumber: true })}
               />
-              {errors.quantity && <p className="text-small" style={{ color: 'var(--danger)', marginTop: '0.25rem' }}>{errors.quantity.message}</p>}
             </div>
           </div>
 
-          <div className="form-group" style={{ marginTop: '1rem' }}>
-            <label className="form-label">Category (optional)</label>
-            <select
-              className="form-select"
+          <div style={{ marginTop: '1rem' }}>
+            <Dropdown
+              label="Category (optional)"
+              error={errors.categoryId?.message}
               {...register('categoryId')}
-            >
-              <option value="">No Category</option>
-              {categoriesData?.data.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-            {errors.categoryId && <p className="text-small" style={{ color: 'var(--danger)', marginTop: '0.25rem' }}>{errors.categoryId.message}</p>}
+              options={[
+                { value: '', label: 'No Category' },
+                ...(categoriesData?.data || []).map(cat => ({
+                  value: cat.id,
+                  label: cat.name
+                }))
+              ]}
+            />
           </div>
 
           <div className="form-group" style={{ marginTop: '1rem' }}>
@@ -205,40 +205,39 @@ export const ProductCreate: React.FC = () => {
                   alt="Preview" 
                   style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-color)' }}
                 />
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={() => {
                     setImagePreview(null);
-                    // We can't easily clear the file input value if it's uncontrolled, but setting preview to null will exclude it from payload
                   }}
-                  className="btn btn-secondary"
                   style={{ position: 'absolute', top: '-10px', right: '-10px', padding: '0.25rem 0.5rem', borderRadius: '50%', background: 'var(--surface-color)' }}
                 >
                   &times;
-                </button>
+                </Button>
               </div>
             )}
           </div>
 
           <div className="flex gap-4" style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
-            <button
+            <Button
               type="submit"
+              variant="primary"
               disabled={mutation.isPending}
-              className="btn btn-primary"
               style={{
                 cursor: mutation.isPending ? 'not-allowed' : 'pointer',
                 opacity: mutation.isPending ? 0.7 : 1,
               }}
             >
               {mutation.isPending ? 'Creating...' : 'Create Product'}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="secondary"
               onClick={() => navigate('/products')}
-              className="btn btn-secondary"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </form>
       </div>
