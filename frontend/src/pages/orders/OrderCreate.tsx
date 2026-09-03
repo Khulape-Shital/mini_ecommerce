@@ -4,6 +4,7 @@ import { productApi } from '../../api/product';
 import { orderApi } from '../../api/order';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
+import { MessageAlert } from '../../components/MessageAlert';
 import { useNavigate } from 'react-router-dom';
 
 export const OrderCreate: React.FC = () => {
@@ -16,6 +17,8 @@ export const OrderCreate: React.FC = () => {
   });
 
   const [items, setItems] = useState<{ productId: string; quantity: number }[]>([]);
+
+  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; text: string } | null>(null);
 
   const { data: productsData, isLoading, isError, error } = useQuery({
     queryKey: ['products'],
@@ -43,8 +46,9 @@ export const OrderCreate: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage(null);
     if (items.length === 0) {
-      alert('Please add at least one product to the order.');
+      setMessage({ type: 'warning', text: 'Please add at least one product to the order.' });
       return;
     }
     
@@ -56,11 +60,11 @@ export const OrderCreate: React.FC = () => {
         shippingAddress: formData.shippingAddress,
         items,
       });
-      alert('Order created successfully!');
-      navigate('/');
+      setMessage({ type: 'success', text: 'Order created successfully!' });
+      setTimeout(() => navigate('/orders'), 1500);
     } catch (err: any) {
       const serverMessage = err.response?.data?.error?.message || err.response?.data?.message;
-      alert('Failed to create order: ' + (serverMessage || err.message));
+      setMessage({ type: 'error', text: 'Failed to create order: ' + (serverMessage || err.message) });
     }
   };
 
@@ -74,6 +78,14 @@ export const OrderCreate: React.FC = () => {
       <div className="page-header">
         <h1 className="text-h1">Checkout</h1>
       </div>
+
+      {message && (
+        <MessageAlert 
+          type={message.type} 
+          message={message.text} 
+          onDismiss={() => setMessage(null)} 
+        />
+      )}
 
       <div className="card" style={{ padding: '2rem' }}>
         <form onSubmit={handleSubmit}>
