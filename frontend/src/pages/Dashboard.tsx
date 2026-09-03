@@ -31,10 +31,21 @@ export const Dashboard: React.FC = () => {
     queryFn: () => orderApi.getOrders({ limit: 5 })
   });
 
+  const { data: allOrdersData, isLoading: isLoadingRevenue } = useQuery({
+    queryKey: ['dashboard_revenue'],
+    queryFn: () => orderApi.getOrders({ limit: 1000 })
+  });
+
   const isLoadingOrders = isLoadingPending || isLoadingConfirmed || isLoadingShipped;
   const activeOrdersCount = (pendingOrders?.meta?.total || 0) + 
                             (confirmedOrders?.meta?.total || 0) + 
                             (shippedOrders?.meta?.total || 0);
+
+  const totalRevenue = allOrdersData?.data
+    ? allOrdersData.data
+        .filter(order => order.status !== 'CANCELLED')
+        .reduce((sum, order) => sum + Number(order.total), 0)
+    : 0;
 
 
   return (
@@ -61,7 +72,9 @@ export const Dashboard: React.FC = () => {
             <h3 className="text-small" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Revenue</h3>
             <span style={{ fontSize: '1.5rem' }}>💰</span>
           </div>
-          <div className="text-h2" style={{ color: 'var(--text-primary)' }}>$45,231.89</div>
+          <div className="text-h2" style={{ color: 'var(--text-primary)' }}>
+            {isLoadingRevenue ? '...' : `$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          </div>
           <div className="text-small" style={{ color: 'var(--success)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <span>↑</span> 20.1% from last month
           </div>
