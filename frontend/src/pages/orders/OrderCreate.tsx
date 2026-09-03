@@ -6,6 +6,7 @@ import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
 import { MessageAlert } from '../../components/MessageAlert';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../store/CartContext';
 
 export const OrderCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export const OrderCreate: React.FC = () => {
     shippingAddress: '',
   });
 
-  const [items, setItems] = useState<{ productId: string; quantity: number }[]>([]);
+  const { items, addToCart, updateQuantity, removeFromCart, clearCart } = useCart();
 
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; text: string } | null>(null);
 
@@ -27,20 +28,22 @@ export const OrderCreate: React.FC = () => {
 
   const handleAddProduct = (productId: string) => {
     if (!productId) return;
-    setItems((prev) => {
-      const existing = prev.find(item => item.productId === productId);
-      if (existing) {
-        return prev.map(item => item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item);
-      }
-      return [...prev, { productId, quantity: 1 }];
-    });
+    const product = productsData?.data?.find(p => p.id === productId);
+    if (product) {
+      addToCart({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        availableStock: product.quantity,
+      });
+    }
   };
 
   const handleUpdateQuantity = (productId: string, quantity: number) => {
     if (quantity <= 0) {
-      setItems((prev) => prev.filter(item => item.productId !== productId));
+      removeFromCart(productId);
     } else {
-      setItems((prev) => prev.map(item => item.productId === productId ? { ...item, quantity } : item));
+      updateQuantity(productId, quantity);
     }
   };
 
@@ -58,8 +61,9 @@ export const OrderCreate: React.FC = () => {
         email: formData.email,
         contact: formData.contact || undefined,
         shippingAddress: formData.shippingAddress,
-        items,
+        items: items.map(item => ({ productId: item.productId, quantity: item.quantity })),
       });
+      clearCart();
       setMessage({ type: 'success', text: 'Order created successfully!' });
       setTimeout(() => navigate('/orders'), 1500);
     } catch (err: any) {
@@ -174,6 +178,7 @@ export const OrderCreate: React.FC = () => {
                           <input 
                             type="number"
                             min="1"
+                            max={item.availableStock}
                             className="form-input"
                             style={{ width: '80px' }}
                             value={item.quantity}
